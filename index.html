@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>millo - Official Site</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body { min-height: 100%; overflow-x: hidden; }
+
+    #bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #080028;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 0 40px;
+    }
+
+    .page { position: relative; z-index: 1; width: 100%; max-width: 460px; }
+
+    /* ══════════════════════════════════════
+       HEADER — Win95 dialog chrome + blue bar
+       ══════════════════════════════════════ */
+    .site-header {
+      background: linear-gradient(180deg, #e0ddd8 0%, #c8c5c0 40%, #b0aaa4 100%);
+      border-bottom: 3px outset #ffffff;
+      width: 100%;
+      padding: 6px 8px 8px;
+    }
+
+    .header-title-bar {
+      background: linear-gradient(90deg, #000080 0%, #1a6fd4 50%, #2288ee 100%);
+      padding: 5px 10px 6px;
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      border: 2px inset #8899cc;
+      margin-bottom: 6px;
+    }
+
+    .header-cursive {
+      font-family: 'Times New Roman', Times, serif;
+      font-style: italic;
+      font-size: 30px;
+      color: #ffffff;
+      text-shadow: 1px 1px 3px rgba(0,0,60,0.7);
+      letter-spacing: 1px;
+    }
+
+    .header-bold {
+      font-family: Impact, 'Arial Black', Arial, sans-serif;
+      font-size: 22px;
+      color: #cceeff;
+      text-shadow: 1px 1px 0 #000040, 2px 2px 0 rgba(0,0,80,0.4);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .header-sub {
+      font-size: 11px;
+      color: #554444;
+      font-family: Tahoma, Arial, sans-serif;
+      text-align: center;
+      font-style: italic;
+      letter-spacing: 0.5px;
+    }
+
+    /* ══════════════════════════════════════
+       WIN95 GRAY SECTION BOX
+       ══════════════════════════════════════ */
+    .win-box {
+      background: #d4d0c8;
+      border: 3px outset #ffffff;
+      margin: 10px 8px 0;
+    }
+
+    .win-box-title {
+      background: linear-gradient(90deg, #000080 0%, #1084d0 100%);
+      color: #fff;
+      font-family: Tahoma, Arial, sans-serif;
+      font-weight: bold;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      padding: 3px 6px 3px 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: space-between;
+    }
+
+    .min-btn {
+      width: 16px; height: 14px;
+      background: #c0c0c0;
+      border: 2px outset #ffffff;
+      color: #000;
+      font-size: 11px;
+      font-family: Arial, sans-serif;
+      font-weight: bold;
+      line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      user-select: none;
+    }
+    .min-btn:active { border-style: inset; }
+
+    .win-box-body {
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* ══════════════════════════════════════
+       OVAL BUTTONS — uniform light pink
+       ══════════════════════════════════════ */
+    .oval-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 30px;
+      padding: 5px 18px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: bold;
+      font-size: 12px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      text-align: center;
+      cursor: default;
+      border: 2px outset #ffccdd;
+      background: linear-gradient(180deg,
+        #ffe4f0 0%,
+        #ffbad6 28%,
+        #ff8dba 62%,
+        #f06898 100%
+      );
+      color: #fff;
+      text-shadow: 1px 1px 2px rgba(100,0,50,0.55);
+    }
+
+    .oval-btn:hover {
+      background: linear-gradient(180deg,
+        #fff0f6 0%,
+        #ffd0e6 28%,
+        #ffaacf 62%,
+        #ff88b8 100%
+      );
+    }
+
+    .oval-btn:active {
+      border-style: inset;
+      background: linear-gradient(180deg,
+        #f06898 0%,
+        #ff8dba 45%,
+        #ffbad6 78%,
+        #ffe4f0 100%
+      );
+    }
+
+    /* Hero — slightly larger, same pink */
+    .oval-hero {
+      min-height: 38px;
+      font-size: 13px;
+    }
+
+    /* these classes kept for HTML compat but all same pink now */
+    .oval-cyan, .oval-pink {
+      background: linear-gradient(180deg,
+        #ffe4f0 0%,
+        #ffbad6 28%,
+        #ff8dba 62%,
+        #f06898 100%
+      );
+      border-color: #ffccdd;
+      text-shadow: 1px 1px 2px rgba(100,0,50,0.55);
+    }
+    .oval-cyan:hover, .oval-pink:hover {
+      background: linear-gradient(180deg,
+        #fff0f6 0%,
+        #ffd0e6 28%,
+        #ffaacf 62%,
+        #ff88b8 100%
+      );
+    }
+
+    /* ══════════════════════════════════════
+       FEATURED BOX — blue/cyan background like
+       the main content area in the screenshot
+       ══════════════════════════════════════ */
+    .featured-area {
+      margin: 10px 8px 0;
+      border: 3px outset #88aacc;
+      background: linear-gradient(135deg,
+        rgba(180,230,255,0.35) 0%,
+        rgba(100,180,255,0.25) 40%,
+        rgba(50,100,200,0.3)  100%
+      );
+      padding: 12px 10px;
+      text-align: center;
+    }
+
+    .featured-label {
+      font-family: 'Times New Roman', Times, serif;
+      font-style: italic;
+      font-size: 17px;
+      color: #ddeeff;
+      text-shadow: 1px 1px 0 #000044, 0 0 12px rgba(100,180,255,0.6);
+      margin-bottom: 3px;
+    }
+
+    .featured-title {
+      font-family: Impact, 'Arial Black', sans-serif;
+      font-size: 20px;
+      color: #aaddff;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-shadow: 1px 1px 0 #000044, 2px 2px 0 rgba(0,50,150,0.5);
+      margin-bottom: 12px;
+    }
+
+    /* ══════════════════════════════════════
+       BLINK + MARQUEE
+       ══════════════════════════════════════ */
+    .mq-outer {
+      background: #000080;
+      border-top: 2px inset #8899cc;
+      border-bottom: 2px inset #8899cc;
+      overflow: hidden;
+      padding: 3px 0;
+      margin: 0;
+    }
+    .mq-inner {
+      display: inline-block;
+      white-space: nowrap;
+      padding-left: 100%;
+      animation: scroll 20s linear infinite;
+      font-size: 11px;
+      color: #aaddff;
+      font-family: Tahoma, Arial, sans-serif;
+      letter-spacing: 0.5px;
+    }
+    @keyframes scroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-100%); }
+    }
+
+    .blink { animation: blink 1s step-end infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* ══════════════════════════════════════
+       GAME PROMO BLOCK
+       ══════════════════════════════════════ */
+    .game-promo {
+      background: #1a0010;
+      border: 3px outset #ff80aa;
+      margin: 10px 8px 0;
+    }
+
+    .game-promo-bar {
+      background: linear-gradient(90deg, #550022 0%, #cc0055 50%, #550022 100%);
+      color: #fff;
+      font-family: Tahoma, Arial, sans-serif;
+      font-weight: bold;
+      font-size: 11px;
+      padding: 3px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid #ff80aa;
+    }
+
+    .game-promo-body {
+      padding: 12px 10px 14px;
+      text-align: center;
+    }
+
+    .game-free-badge {
+      display: inline-block;
+      background: #ffcc00;
+      color: #550000;
+      font-family: Impact, Arial, sans-serif;
+      font-size: 13px;
+      font-weight: bold;
+      padding: 2px 10px;
+      border: 2px outset #ffee88;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      animation: blink 0.75s step-end infinite;
+    }
+
+    .game-title-big {
+      font-family: Impact, 'Arial Black', sans-serif;
+      font-size: 30px;
+      color: #ff80aa;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      text-shadow: 2px 2px 0 #330011, -1px -1px 0 #880044;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .game-tagline {
+      font-family: Tahoma, Arial, sans-serif;
+      font-size: 11px;
+      color: #cc88aa;
+      font-style: italic;
+      margin-bottom: 10px;
+      letter-spacing: 0.5px;
+    }
+
+    /* CSS mini game scene */
+    .game-screen {
+      background: #000;
+      border: 3px inset #664455;
+      margin: 0 auto 10px;
+      width: 100%;
+      max-width: 260px;
+      height: 72px;
+      position: relative;
+      overflow: hidden;
+      font-family: monospace;
+    }
+
+    .game-screen-inner {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+    }
+
+    .gs-wall {
+      width: 10px;
+      background: #888;
+      box-shadow: 0 0 4px #aaa;
+      align-self: stretch;
+      margin: 8px 0;
+    }
+
+    .gs-gap { width: 10px; background: transparent; }
+
+    .gs-player {
+      width: 14px; height: 14px;
+      background: radial-gradient(circle at 35% 35%, #ffaacc, #ff1493, #880033);
+      border-radius: 50%;
+      box-shadow: 0 0 6px #ff1493;
+      animation: player-bounce 0.6s ease-in-out infinite alternate;
+      flex-shrink: 0;
+    }
+
+    @keyframes player-bounce {
+      from { transform: translateY(-6px); }
+      to   { transform: translateY(6px); }
+    }
+
+    .gs-score {
+      position: absolute;
+      top: 4px; right: 6px;
+      font-size: 9px;
+      color: #00ff66;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 1px;
+    }
+
+    .gs-label {
+      position: absolute;
+      bottom: 4px; left: 0; right: 0;
+      font-size: 9px;
+      color: #666;
+      text-align: center;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 1px;
+    }
+
+    .game-copy {
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      color: #cc88aa;
+      line-height: 1.7;
+      margin-bottom: 10px;
+    }
+
+    .game-copy strong {
+      color: #ffb3cc;
+    }
+
+    .game-stars {
+      font-size: 14px;
+      color: #ffcc00;
+      margin-bottom: 10px;
+      text-shadow: 1px 1px 0 #664400;
+    }
+
+    .play-now-btn {
+      font-size: 14px !important;
+      min-height: 40px !important;
+      max-width: 220px;
+      margin: 0 auto;
+      animation: pulse-btn 1.8s ease-in-out infinite;
+    }
+
+    @keyframes pulse-btn {
+      0%, 100% { box-shadow: 0 0 0 rgba(255,100,150,0); }
+      50%       { box-shadow: 0 0 12px rgba(255,100,150,0.6), 0 0 24px rgba(255,100,150,0.3); }
+    }
+
+    /* ══════════════════════════════════════
+       BOTTOM ICON BADGES (like the screenshot's
+       "Cool Links" / "Send me an E-mail!" row)
+       ══════════════════════════════════════ */
+    .badge-row {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin: 12px 8px 0;
+      background: #c8c4bc;
+      border: 3px outset #ffffff;
+      padding: 10px;
+    }
+
+    .badge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      text-decoration: none;
+      cursor: default;
+    }
+
+    .badge-icon {
+      width: 38px; height: 38px;
+      border: 2px outset #aaaaaa;
+      background: linear-gradient(135deg, #ddeeff 0%, #88aadd 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+
+    .badge-icon.pink-bg {
+      background: linear-gradient(135deg, #ffddee 0%, #dd88aa 100%);
+    }
+    .badge-icon.green-bg {
+      background: linear-gradient(135deg, #ddeedd 0%, #88bb88 100%);
+    }
+
+    .badge-text {
+      font-size: 10px;
+      font-family: Arial, sans-serif;
+      color: #220033;
+      font-weight: bold;
+      text-align: center;
+      max-width: 70px;
+      line-height: 1.2;
+    }
+
+    /* ══════════════════════════════════════
+       FOOTER / COUNTER
+       ══════════════════════════════════════ */
+    .footer {
+      margin: 10px 8px 0;
+      background: #c8c4bc;
+      border: 3px outset #ffffff;
+      padding: 8px 10px;
+      text-align: center;
+    }
+
+    .counter-display {
+      display: inline-block;
+      background: #000;
+      border: 2px inset #666;
+      padding: 3px 10px;
+      margin-bottom: 6px;
+    }
+    .counter-display span {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 14px;
+      color: #00ff66;
+      letter-spacing: 3px;
+    }
+
+    .footer-text {
+      font-size: 10px;
+      font-family: Tahoma, Arial, sans-serif;
+      color: #443344;
+      line-height: 1.9;
+    }
+    .footer-text a { color: #000080; }
+
+    .ns-badge {
+      display: inline-block;
+      margin-top: 6px;
+      background: #000080;
+      border: 1px outset #8899cc;
+      padding: 2px 8px;
+      font-size: 9px;
+      color: #aaddff;
+      font-family: Tahoma, Arial, sans-serif;
+    }
+  </style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="site-header">
+    <div class="header-title-bar">
+      <span class="header-cursive">millo</span>
+      <span class="header-bold">Official Site</span>
+    </div>
+    <div class="header-sub">Rochester, New York &nbsp;·&nbsp; alt-rock &nbsp;·&nbsp; est. 2021</div>
+  </div>
+
+  <!-- MARQUEE -->
+  <div class="mq-outer">
+    <span class="mq-inner">
+      ★ Welcome to the official millo website ★ "Hit The Wall" out now ★ Rochester, NY ★ Stream on Spotify &amp; Apple Music ★ Play our videogame ★ Follow us everywhere ★
+    </span>
+  </div>
+
+  <!-- FEATURED AREA (blue/cyan content panel like screenshot) -->
+  <div class="featured-area">
+    <div class="featured-label">millo</div>
+    <div class="featured-title">Hit The Wall</div>
+    <a href="https://nfan.link/hit-the-wall" target="_blank" class="oval-btn oval-hero" style="max-width:240px;margin:0 auto;">
+      ♪ &nbsp;Listen Now&nbsp; ♪
+    </a>
+    <div style="margin-top:8px; font-size:11px; color:#aaccee; font-family:Tahoma,Arial,sans-serif;">
+      <span class="blink">★</span> &nbsp;new single out now&nbsp; <span class="blink">★</span>
+    </div>
+  </div>
+
+  <!-- FEATURED LINKS -->
+  <div class="win-box">
+    <div class="win-box-title">📁 &nbsp;Featured</div>
+    <div class="win-box-body">
+      <a href="https://millo-band.github.io/millos-hit-the-wall/" target="_blank" class="oval-btn oval-cyan">
+        ▶ &nbsp;Play The Videogame
+      </a>
+      <a href="https://www.youtube.com/watch?v=6AX97O1ykZs" target="_blank" class="oval-btn">
+        ▶ &nbsp;The Making Of Hit The Wall
+      </a>
+    </div>
+  </div>
+
+  <!-- MUSIC -->
+  <div class="win-box">
+    <div class="win-box-title">🎵 &nbsp;Stream Our Music</div>
+    <div class="win-box-body">
+      <a href="https://open.spotify.com/artist/5DqBbDMaCLIJEswvNl07Ys" target="_blank" class="oval-btn oval-cyan">
+        Spotify
+      </a>
+      <a href="https://music.apple.com/us/artist/millo/1620074008" target="_blank" class="oval-btn">
+        Apple Music
+      </a>
+      <a href="https://millo.bandcamp.com/track/infrared" target="_blank" class="oval-btn oval-cyan">
+        Bandcamp
+      </a>
+    </div>
+  </div>
+
+  <!-- PLAYLISTS -->
+  <div class="win-box">
+    <div class="win-box-title">📀 &nbsp;Playlists</div>
+    <div class="win-box-body">
+      <a href="https://open.spotify.com/playlist/1y0fXTIDoaBg10VTmyN5K4" target="_blank" class="oval-btn">
+        This Is Millo
+      </a>
+      <a href="https://open.spotify.com/playlist/05UXt2d2pC8IviCjaNYYa8" target="_blank" class="oval-btn">
+        millo's favorites
+      </a>
+      <a href="https://open.spotify.com/playlist/37i9dQZF1E4yC0pOQAwhcI" target="_blank" class="oval-btn">
+        Millo Radio
+      </a>
+    </div>
+  </div>
+
+  <!-- FOLLOW -->
+  <div class="win-box">
+    <div class="win-box-title">🌐 &nbsp;Find Us Online</div>
+    <div class="win-box-body">
+      <a href="https://www.instagram.com/millo.band/reels/" target="_blank" class="oval-btn oval-pink">
+        Instagram — @millo.band
+      </a>
+      <a href="https://youtu.be/wL8Z0aUSr2Q" target="_blank" class="oval-btn">
+        YouTube
+      </a>
+    </div>
+  </div>
+
+  <!-- MORE -->
+  <div class="win-box">
+    <div class="win-box-title">✨ &nbsp;More</div>
+    <div class="win-box-body">
+      <a href="https://millo.bandcamp.com/merch" target="_blank" class="oval-btn oval-cyan">
+        Merch
+      </a>
+      <a href="https://sites.google.com/tokencreative.co/epk/home" target="_blank" class="oval-btn">
+        EPK / Press Kit
+      </a>
+    </div>
+  </div>
+
+  <!-- GAME SECTION -->
+  <div class="win-box" id="game-box">
+    <div class="win-box-title">🕹️ &nbsp;Play Our Game</div>
+    <div class="win-box-body" style="text-align:center; padding:16px 12px 18px;">
+      <div style="font-family:Impact,'Arial Black',sans-serif;font-size:26px;color:#330011;letter-spacing:2px;margin-bottom:4px;">HIT THE WALL</div>
+      <div style="font-family:Tahoma,Arial,sans-serif;font-size:11px;color:#774455;font-style:italic;margin-bottom:10px;">millo's official free browser game</div>
+      <div style="font-family:Arial,sans-serif;font-size:12px;color:#443333;line-height:1.7;margin-bottom:14px;">
+        Dodge obstacles, smash through walls.<br>How long can you survive?
+      </div>
+      <a href="https://millo-band.github.io/millos-hit-the-wall/" target="_blank" class="oval-btn" style="max-width:200px;margin:0 auto;font-size:15px;min-height:42px;">
+        ▶ &nbsp;PLAY FREE ONLINE
+      </a>
+    </div>
+  </div>
+
+  <!-- BADGE ROW (like Cool Links / Send me an E-mail) -->
+  <div class="badge-row">
+    <a href="mailto:millo.manager@gmail.com" class="badge">
+      <div class="badge-icon pink-bg">✉️</div>
+      <span class="badge-text">Send me an E-mail!</span>
+    </a>
+    <a href="https://millo.bandcamp.com/merch" target="_blank" class="badge">
+      <div class="badge-icon">🛍️</div>
+      <span class="badge-text">Cool Merch!</span>
+    </a>
+    <a href="https://sites.google.com/tokencreative.co/epk/home" target="_blank" class="badge">
+      <div class="badge-icon green-bg">📋</div>
+      <span class="badge-text">Press Kit</span>
+    </a>
+    <a href="https://www.instagram.com/millo.band/reels/" target="_blank" class="badge">
+      <div class="badge-icon pink-bg">📸</div>
+      <span class="badge-text">Instagram</span>
+    </a>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="counter-display">
+      <span>004291</span>
+    </div>
+    <div class="footer-text">
+      You are visitor #004,291<br>
+      © 2024 millo &nbsp;·&nbsp; Rochester, New York<br>
+      <a href="mailto:millo.manager@gmail.com">millo.manager@gmail.com</a>
+    </div>
+    <div class="ns-badge">Best viewed in Netscape Navigator 4.0 at 800×600</div>
+  </div>
+
+</div>
+<script>
+  // ── Canvas setup ──────────────────────────────────
+  const canvas = document.getElementById('bg');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  const PI2 = Math.PI * 2;
+
+  // ── 3-D math ──────────────────────────────────────
+  function rotX([x,y,z],a){ return [x, y*Math.cos(a)-z*Math.sin(a), y*Math.sin(a)+z*Math.cos(a)]; }
+  function rotY([x,y,z],a){ return [x*Math.cos(a)+z*Math.sin(a), y, -x*Math.sin(a)+z*Math.cos(a)]; }
+  function rotZ([x,y,z],a){ return [x*Math.cos(a)-y*Math.sin(a), x*Math.sin(a)+y*Math.cos(a), z]; }
+
+  // pink wireframe stroke — vary alpha by shape
+  function pinkStroke(alpha) { return `rgba(255,105,180,${alpha})`; }
+
+  // ── Wireframe Sphere ──────────────────────────────
+  class WireSphere {
+    constructor(scatter) {
+      this.r   = rnd(55, 120);
+      this.x   = scatter ? rnd(0, W) : (Math.random()<.5 ? -this.r-10 : W+this.r+10);
+      this.y   = scatter ? rnd(0, H) : rnd(0, H);
+      const sp = rnd(0.05, 0.14), ang = rnd(0, PI2);
+      this.vx  = Math.cos(ang)*sp;
+      this.vy  = Math.sin(ang)*sp;
+      this.rx  = rnd(0, PI2); this.ry = rnd(0, PI2);
+      this.drx = rnd(-0.007, 0.007);
+      this.dry = rnd(-0.011, 0.011);
+      this.alpha = rnd(0.35, 0.65);
+    }
+
+    update() {
+      this.x += this.vx; this.y += this.vy;
+      this.rx += this.drx; this.ry += this.dry;
+      const pad = this.r + 30;
+      if (this.x < -pad || this.x > W+pad || this.y < -pad || this.y > H+pad)
+        Object.assign(this, new WireSphere(false));
+    }
+
+    draw() {
+      const NLAT = 7, NLON = 10;
+      ctx.strokeStyle = pinkStroke(this.alpha);
+      ctx.lineWidth = 1;
+
+      // latitude rings
+      for (let i = 1; i < NLAT; i++) {
+        const phi = (i / NLAT) * Math.PI;
+        ctx.beginPath();
+        for (let j = 0; j <= NLON; j++) {
+          const theta = (j / NLON) * PI2;
+          let v = [this.r*Math.sin(phi)*Math.cos(theta), this.r*Math.cos(phi), this.r*Math.sin(phi)*Math.sin(theta)];
+          v = rotX(v, this.rx); v = rotY(v, this.ry);
+          j === 0 ? ctx.moveTo(this.x+v[0], this.y+v[1]) : ctx.lineTo(this.x+v[0], this.y+v[1]);
+        }
+        ctx.closePath(); ctx.stroke();
+      }
+
+      // longitude lines
+      for (let j = 0; j < NLON; j++) {
+        const theta = (j / NLON) * PI2;
+        ctx.beginPath();
+        for (let i = 0; i <= NLAT; i++) {
+          const phi = (i / NLAT) * Math.PI;
+          let v = [this.r*Math.sin(phi)*Math.cos(theta), this.r*Math.cos(phi), this.r*Math.sin(phi)*Math.sin(theta)];
+          v = rotX(v, this.rx); v = rotY(v, this.ry);
+          i === 0 ? ctx.moveTo(this.x+v[0], this.y+v[1]) : ctx.lineTo(this.x+v[0], this.y+v[1]);
+        }
+        ctx.stroke();
+      }
+    }
+  }
+
+  // ── Wireframe Pyramid ─────────────────────────────
+  class WirePyramid {
+    constructor(scatter) {
+      this.s   = rnd(55, 105);
+      this.x   = scatter ? rnd(0, W) : (Math.random()<.5 ? -200 : W+200);
+      this.y   = scatter ? rnd(0, H) : rnd(0, H);
+      const sp = rnd(0.04, 0.13), ang = rnd(0, PI2);
+      this.vx  = Math.cos(ang)*sp;
+      this.vy  = Math.sin(ang)*sp;
+      this.rx  = rnd(0,PI2); this.ry = rnd(0,PI2); this.rz = rnd(0,PI2);
+      this.drx = rnd(-0.012,0.012); this.dry = rnd(-0.016,0.016); this.drz = rnd(-0.008,0.008);
+      this.alpha = rnd(0.35, 0.65);
+    }
+
+    update() {
+      this.x += this.vx; this.y += this.vy;
+      this.rx += this.drx; this.ry += this.dry; this.rz += this.drz;
+      const pad = this.s * 3;
+      if (this.x < -pad || this.x > W+pad || this.y < -pad || this.y > H+pad)
+        Object.assign(this, new WirePyramid(false));
+    }
+
+    draw() {
+      const s = this.s;
+      const raw = [[-s,s,-s],[s,s,-s],[s,s,s],[-s,s,s],[0,-s*1.4,0]];
+      const rv  = raw.map(v => rotZ(rotY(rotX(v,this.rx),this.ry),this.rz));
+      const pv  = rv.map(v => [this.x+v[0], this.y+v[1]]);
+
+      // base square + 4 edges to apex
+      const edges = [[0,1],[1,2],[2,3],[3,0],[0,4],[1,4],[2,4],[3,4]];
+
+      ctx.strokeStyle = pinkStroke(this.alpha);
+      ctx.lineWidth = 1.2;
+      edges.forEach(([a,b]) => {
+        ctx.beginPath();
+        ctx.moveTo(pv[a][0], pv[a][1]);
+        ctx.lineTo(pv[b][0], pv[b][1]);
+        ctx.stroke();
+      });
+    }
+  }
+
+  // ── Scene ─────────────────────────────────────────
+  const shapes = [
+    ...Array.from({length:6}, () => new WireSphere(true)),
+    ...Array.from({length:6}, () => new WirePyramid(true)),
+  ];
+
+  function tick() {
+    ctx.fillStyle = 'rgba(8,0,40,0.055)'; // slow fade = long echo trail
+    ctx.fillRect(0, 0, W, H);
+    shapes.forEach(s => { s.update(); s.draw(); });
+    requestAnimationFrame(tick);
+  }
+
+  ctx.fillStyle = '#080028';
+  ctx.fillRect(0, 0, W, H);
+  requestAnimationFrame(tick);
+
+  // ── Collapseable sections ─────────────────────────
+  document.querySelectorAll('.win-box').forEach(box => {
+    const title = box.querySelector('.win-box-title');
+    const body  = box.querySelector('.win-box-body');
+    if (!title || !body) return;
+
+    const btn = document.createElement('div');
+    btn.className = 'min-btn';
+    btn.textContent = '−';
+    title.appendChild(btn);
+
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const open = body.style.display !== 'none';
+      body.style.display = open ? 'none' : '';
+      btn.textContent = open ? '+' : '−';
+    });
+  });
+</script>
+</body>
+</html>
