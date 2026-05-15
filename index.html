@@ -51,7 +51,7 @@
       background: linear-gradient(90deg, #000080 0%, #1a6fd4 50%, #2288ee 100%);
       padding: 5px 10px 6px;
       display: flex;
-      align-items: baseline;
+      align-items: center; /* Changed from baseline to force vertical centering */
       gap: 10px;
       border: 2px inset #8899cc;
       margin-bottom: 6px;
@@ -64,6 +64,8 @@
       color: #ffffff;
       text-shadow: 1px 1px 3px rgba(0,0,60,0.7);
       letter-spacing: 1px;
+      line-height: 0.8; /* Shrinks the bad invisible padding of the font */
+      transform: translateY(-3px); /* Nudges the font physically upward */
     }
 
     .header-bold {
@@ -227,7 +229,9 @@
       font-size: 17px;
       color: #ddeeff;
       text-shadow: 1px 1px 0 #000044, 0 0 12px rgba(100,180,255,0.6);
-      margin-bottom: 3px;
+      margin-bottom: 8px; /* Increased to give it some breathing room */
+      line-height: 0.8;
+      transform: translateY(-2px);
     }
 
     .featured-title {
