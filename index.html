@@ -1,870 +1,488 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>millo - Official Site</title>
-  <style>
-    /* ══════════════════════════════════════
-       CUSTOM FONTS
-       ══════════════════════════════════════ */
-    @font-face {
-      font-family: 'Pixelated Times';
-      src: url('pixelated-times-new-roman.ttf') format('truetype');
-      font-weight: normal;
-      font-style: normal;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>MILLO // TERMINAL</title>
+<meta name="description" content="millo — alt-rock from Rochester, NY. New single 'Summer' out June 22. Stream everywhere, play the game, follow along." />
+<meta name="theme-color" content="#070409" />
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+<meta property="og:title" content="MILLO // OFFICIAL" />
+<meta property="og:description" content="New single 'Summer' — out June 22. Stream, play the game, follow along." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="og-image.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="MILLO // OFFICIAL" />
+<meta name="twitter:description" content="New single 'Summer' — out June 22." />
 
-    html, body { min-height: 100%; overflow-x: hidden; }
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=IBM+Plex+Mono:wght@400;500;700&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=IBM+Plex+Mono:wght@400;500;700&display=swap" />
 
-    #bg {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-    }
+<style>
+  :root{
+    --pink:#FF91AF;
+    --pink-hi:#FFC1D4;
+    --pink-dim:rgba(255,145,175,0.55);
+    --pink-faint:rgba(255,145,175,0.22);
+    --bg:#070409;
+    --glow:0 0 4px rgba(255,145,175,0.45);
+    --mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    --pixel:'Press Start 2P',var(--mono);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{ -webkit-text-size-adjust:100%; background:var(--bg); }
+  body{
+    background:var(--bg); color:var(--pink);
+    font-family:var(--mono); font-size:14px; line-height:1.5;
+    -webkit-font-smoothing:antialiased; min-height:100vh;
+    text-shadow:var(--glow);
+    overflow-x:hidden;
+  }
+  a{ color:inherit; text-decoration:none; -webkit-tap-highlight-color:transparent; }
 
-    body {
-      font-family: 'Pixelated Times', 'Times New Roman', Times, serif;
-      background: #080028;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 0 0 40px;
-    }
+  /* ══ CRT OVERLAYS (fixed, pointer-events none) ══════════ */
+  .scanlines{
+    position:fixed; inset:0; z-index:9000; pointer-events:none;
+    background:repeating-linear-gradient(0deg,
+      rgba(0,0,0,0) 0 2px, rgba(0,0,0,0.28) 2px 3px);
+  }
+  .vignette{
+    position:fixed; inset:0; z-index:9001; pointer-events:none;
+    background:radial-gradient(ellipse 90% 80% at 50% 45%,
+      transparent 55%, rgba(0,0,0,0.55) 100%);
+  }
+  .sweep{
+    position:fixed; left:0; right:0; height:120px; z-index:9002; pointer-events:none;
+    background:linear-gradient(180deg, transparent, rgba(255,145,175,0.06), transparent);
+    animation:sweep 7s linear infinite;
+  }
+  @keyframes sweep{ from{ transform:translateY(-130px);} to{ transform:translateY(100vh);} }
+  body.flicker{ animation:flick 4s steps(60) infinite; }
+  @keyframes flick{ 0%,100%{opacity:1} 3%{opacity:.86} 6%{opacity:1} 70%{opacity:1} 72%{opacity:.92} 74%{opacity:1} }
 
-    .page { position: relative; z-index: 1; width: 100%; max-width: 460px; }
+  /* ══ TERMINAL WINDOW ════════════════════════════════════ */
+  .term{
+    width:100%; max-width:560px; margin:0 auto; min-height:100vh;
+    border-left:1px solid var(--pink-faint); border-right:1px solid var(--pink-faint);
+    padding:0 16px 64px;
+  }
+  @media (max-width:480px){ .term{ border:none; padding:0 13px 56px; } }
 
-    /* ══════════════════════════════════════
-       HEADER — Win95 dialog chrome + blue bar
-       ══════════════════════════════════════ */
-    .site-header {
-      background: linear-gradient(180deg, #e0ddd8 0%, #c8c5c0 40%, #b0aaa4 100%);
-      border-bottom: 3px outset #ffffff;
-      width: 100%;
-      padding: 6px 8px 8px;
-    }
+  /* window title bar */
+  .titlebar{
+    position:sticky; top:0; z-index:50; background:var(--bg);
+    display:flex; align-items:center; gap:10px;
+    padding:11px 2px 10px; border-bottom:1px solid var(--pink-faint);
+    font-size:10px; letter-spacing:0.12em;
+  }
+  .tb-dots{ display:flex; gap:5px; }
+  .tb-dots i{ width:9px; height:9px; border:1px solid var(--pink); display:block; }
+  .tb-dots i:nth-child(2){ background:var(--pink); }
+  .tb-name{ opacity:0.85; }
+  .tb-stat{ margin-left:auto; opacity:0.45; font-size:9px; }
+  .tb-stat .on{ color:var(--pink-hi); animation:blink 1.4s step-end infinite; }
 
-    .header-title-bar {
-      background: linear-gradient(90deg, #000080 0%, #1a6fd4 50%, #2288ee 100%);
-      padding: 5px 10px 6px;
-      display: flex;
-      align-items: center; /* Changed from baseline to force vertical centering */
-      gap: 10px;
-      border: 2px inset #8899cc;
-      margin-bottom: 6px;
-    }
+  /* ══ BOOT OVERLAY ═══════════════════════════════════════ */
+  #boot{
+    position:fixed; inset:0; z-index:8000; background:var(--bg);
+    padding:24px 18px; font-size:13px; line-height:1.9;
+    white-space:pre-wrap; word-break:break-word;
+    transition:opacity .4s ease;
+  }
+  #boot.done{ opacity:0; pointer-events:none; }
+  #boot .ok{ color:var(--pink-hi); }
+  #boot .skip{ position:fixed; bottom:20px; right:20px; font-size:9px; opacity:0.4; letter-spacing:0.1em; }
+  .cur{ display:inline-block; width:0.6em; height:1.05em; background:var(--pink); vertical-align:-2px; animation:blink 1s step-end infinite; }
+  @keyframes blink{ 0%,100%{opacity:1} 50%{opacity:0} }
 
-    .header-cursive {
-      font-family: 'Pixelated Times', 'Times New Roman', Times, serif;
-      font-style: italic;
-      font-size: 30px;
-      color: #ffffff;
-      text-shadow: 1px 1px 3px rgba(0,0,60,0.7);
-      letter-spacing: 1px;
-      line-height: 0.8; /* Shrinks the bad invisible padding of the font */
-      transform: translateY(-3px); /* Nudges the font physically upward */
-    }
+  /* ══ HEADER / IDENTITY ══════════════════════════════════ */
+  header{ padding:26px 0 14px; }
+  .logo{ font-family:var(--pixel); font-size:30px; line-height:1; letter-spacing:0.02em; text-shadow:0 0 8px rgba(255,145,175,0.5); }
+  .logo .cur{ height:0.8em; width:0.5em; margin-left:4px; }
+  .bio{ margin-top:13px; font-size:14px; font-style:italic; letter-spacing:0.04em; color:var(--pink-hi); opacity:0.85; }
+  .stars{ margin-top:9px; display:flex; gap:11px; }
+  .stars i{ font-style:normal; font-size:14px; color:var(--pink); text-shadow:0 0 6px rgba(255,145,175,0.55); animation:twinkle 2.6s ease-in-out infinite; }
+  .stars i:nth-child(2){ animation-delay:.35s }
+  .stars i:nth-child(3){ animation-delay:.7s }
+  .stars i:nth-child(4){ animation-delay:1.05s }
+  .stars i:nth-child(5){ animation-delay:1.4s }
+  @keyframes twinkle{ 0%,100%{opacity:1} 50%{opacity:0.32} }
 
-    .header-bold {
-      font-family: 'Pixelated Times', 'Times New Roman', Times, serif;
-      font-size: 22px;
-      color: #cceeff;
-      text-shadow: 1px 1px 0 #000040, 2px 2px 0 rgba(0,0,80,0.4);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      line-height: 0.9;
-      transform: translateY(-2px);
-    }
+  /* ticker */
+  .ticker{ margin:14px 0 4px; border-top:1px solid var(--pink-faint); border-bottom:1px solid var(--pink-faint); overflow:hidden; padding:6px 0; }
+  .ticker-inner{ display:inline-block; white-space:nowrap; padding-left:100%; font-size:10px; letter-spacing:0.1em; opacity:0.7; animation:ticker 22s linear infinite; }
+  @keyframes ticker{ from{transform:translateX(0)} to{transform:translateX(-100%)} }
 
-    .header-sub {
-      font-size: 13px; /* Bumped up slightly for pixel font legibility */
-      color: #554444;
-      font-family: 'Pixelated Times', 'Times New Roman', Times, serif;
-      text-align: center;
-      font-style: italic;
-      letter-spacing: 0.5px;
-    }
+  /* ══ PROMPT LINE ════════════════════════════════════════ */
+  .prompt{ margin:26px 0 12px; font-size:12px; letter-spacing:0.03em; }
+  .prompt .u{ color:var(--pink-hi); }
+  .prompt .p{ opacity:0.55; }
+  .prompt .c{ opacity:0.9; }
+  .prompt .cur{ height:0.95em; }
 
-    /* ══════════════════════════════════════
-       WIN95 GRAY SECTION BOX
-       ══════════════════════════════════════ */
-    .win-box {
-      background: #d4d0c8;
-      border: 3px outset #ffffff;
-      margin: 10px 8px 0;
-    }
+  /* ══ SECTION HEADER (plain-language) ════════════════════ */
+  .shead{
+    display:flex; align-items:center; gap:11px; margin:28px 0 11px;
+    font-size:12px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase;
+    color:var(--pink-hi); opacity:0.85;
+  }
+  .shead::before{ content:'>'; opacity:0.5; font-weight:400; }
+  .shead::after{ content:''; flex:1; height:1px; background:var(--pink-faint); }
 
-    .win-box-title {
-      background: linear-gradient(90deg, #000080 0%, #1084d0 100%);
-      color: #fff;
-      font-family: 'Pixelated Times', 'Times New Roman', Times, serif;
-      font-weight: bold;
-      font-size: 13px; /* Bumped up */
-      letter-spacing: 0.5px;
-      padding: 3px 6px 3px 8px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      justify-content: space-between;
-    }
+  /* ══ COMMAND / LINK ROWS ════════════════════════════════ */
+  .cmd{
+    display:flex; align-items:baseline; gap:8px; padding:7px 6px;
+    font-size:13px; transition:background .1s,color .1s;
+  }
+  .cmd .arrow{ opacity:0.55; flex-shrink:0; }
+  .cmd .name{ flex-shrink:0; font-weight:500; }
+  .cmd .name .sub{ opacity:0.4; font-size:11px; margin-left:6px; }
+  .cmd .lead{ flex:1; border-bottom:1px dotted var(--pink-faint); transform:translateY(-3px); min-width:14px; }
+  .cmd .act{ flex-shrink:0; opacity:0.55; font-size:11px; letter-spacing:0.06em; }
+  .cmd:hover, .cmd:focus-visible{ background:var(--pink); color:var(--bg); outline:none; text-shadow:none; }
+  .cmd:hover .arrow, .cmd:hover .act{ opacity:1; }
+  .cmd:hover .lead{ border-bottom-color:rgba(7,4,9,0.4); }
+  .cmd:hover .name::after{ content:'█'; margin-left:7px; animation:blink .7s step-end infinite; }
+  .cmd:active{ transform:translateX(2px); }
 
-    .min-btn {
-      width: 16px; height: 14px;
-      background: #c0c0c0;
-      border: 2px outset #ffffff;
-      color: #000;
-      font-size: 13px;
-      font-family: 'Pixelated Times', 'Times New Roman', Times, serif;
-      font-weight: bold;
-      line-height: 0.8;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-      flex-shrink: 0;
-      user-select: none;
-    }
-    .min-btn:active { border-style: inset; }
+  /* ══ HERO: SUMMER ═══════════════════════════════════════ */
+  .hero{ margin:22px 0 4px; border:1px solid var(--pink); padding:18px 16px 20px; position:relative; }
+  .hero::before{ content:'NEW SINGLE'; position:absolute; top:-8px; left:14px; background:var(--bg); padding:0 8px; font-family:var(--pixel); font-size:7px; letter-spacing:0.16em; color:var(--pink-hi); }
+  .hero-top{ display:flex; gap:14px; align-items:center; }
+  #sun{ width:84px; height:84px; flex-shrink:0; image-rendering:pixelated; border:1px solid var(--pink-faint); }
+  .hero-meta{ min-width:0; }
+  .hero-eyebrow{ font-size:10px; opacity:0.6; letter-spacing:0.12em; }
+  .hero-title{
+    font-family:var(--pixel); font-size:34px; line-height:1; letter-spacing:0.02em; margin:8px 0 6px;
+    position:relative; text-shadow:0 0 10px rgba(255,145,175,0.5);
+  }
+  @media (max-width:380px){ .hero-title{ font-size:27px; } }
+  .glitch::before,.glitch::after{
+    content:attr(data-text); position:absolute; left:0; top:0; width:100%;
+    overflow:hidden; clip-path:inset(0 0 0 0);
+  }
+  .glitch::before{ color:#7df; transform:translate(-2px,0); animation:gl1 5s steps(2) infinite; opacity:0.0; }
+  .glitch::after{ color:var(--pink-hi); transform:translate(2px,0); animation:gl2 5s steps(2) infinite; opacity:0.0; }
+  @keyframes gl1{ 0%,92%,100%{opacity:0;clip-path:inset(0 0 100% 0)} 93%{opacity:.7;clip-path:inset(10% 0 60% 0)} 96%{opacity:.7;clip-path:inset(60% 0 20% 0)} }
+  @keyframes gl2{ 0%,92%,100%{opacity:0;clip-path:inset(0 0 100% 0)} 94%{opacity:.6;clip-path:inset(40% 0 35% 0)} 97%{opacity:.6;clip-path:inset(70% 0 5% 0)} }
 
-    .win-box-body {
-      padding: 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
+  .eq{ display:flex; align-items:flex-end; gap:3px; height:22px; margin:12px 0 14px; }
+  .eq i{ width:5px; height:100%; background:var(--pink); display:block; transform-origin:bottom; animation:eq 0.9s ease-in-out infinite; }
+  @keyframes eq{ 0%,100%{transform:scaleY(0.2)} 50%{transform:scaleY(1)} }
 
-    /* ══════════════════════════════════════
-       OVAL BUTTONS — uniform light pink
-       ══════════════════════════════════════ */
-    .oval-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      min-height: 30px;
-      padding: 5px 18px;
-      border-radius: 50px;
-      text-decoration: none;
-      font-family: 'Pixelated Times', 'Times New Roman', Times, serif;
-      font-weight: bold;
-      font-size: 14px; /* Bumped up */
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-      text-align: center;
-      cursor: default;
-      border: 2px outset #ffccdd;
-      background: linear-gradient(180deg,
-        #ffe4f0 0%,
-        #ffbad6 28%,
-        #ff8dba 62%,
-        #f06898 100%
-      );
-      color: #fff;
-      text-shadow: 1px 1px 2px rgba(100,0,50,0.55);
-      line-height: 0.9;
-    }
+  .countdown{ font-size:13px; letter-spacing:0.08em; margin-bottom:14px; }
+  .countdown .lab{ opacity:0.55; }
+  .countdown #cd{ color:var(--pink-hi); font-weight:700; }
+  .hero-btn{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    border:1px solid var(--pink); padding:13px 14px; font-size:13px; font-weight:700; letter-spacing:0.04em;
+    transition:background .12s,color .12s;
+  }
+  .hero-btn:hover{ background:var(--pink); color:var(--bg); text-shadow:none; }
+  .hero-btn:active{ transform:translateY(1px); }
+  .hero-note{ margin-top:10px; font-size:10px; opacity:0.45; letter-spacing:0.04em; }
 
-    .oval-btn:hover {
-      background: linear-gradient(180deg,
-        #fff0f6 0%,
-        #ffd0e6 28%,
-        #ffaacf 62%,
-        #ff88b8 100%
-      );
-    }
+  /* ══ GAME ═══════════════════════════════════════════════ */
+  .game{ margin-top:22px; border:1px solid var(--pink-faint); padding:16px; }
+  .game-h{ font-family:var(--pixel); font-size:14px; letter-spacing:0.04em; margin-bottom:10px; }
+  .game-sub{ font-size:11px; opacity:0.6; line-height:1.7; margin-bottom:12px; }
+  .game-screen{ position:relative; height:132px; border:1px solid var(--pink-faint); overflow:hidden; margin-bottom:12px; background:#050007; }
+  #maze{ display:block; width:100%; height:100%; }
+  .gs-score{ position:absolute; top:5px; right:8px; font-size:9px; color:var(--pink-hi); letter-spacing:0.1em; text-shadow:0 0 5px rgba(255,145,175,0.6); }
+  .gs-label{ position:absolute; bottom:5px; left:8px; font-size:8px; color:var(--pink-dim); letter-spacing:0.12em; }
 
-    .oval-btn:active {
-      border-style: inset;
-      background: linear-gradient(180deg,
-        #f06898 0%,
-        #ff8dba 45%,
-        #ffbad6 78%,
-        #ffe4f0 100%
-      );
-    }
+  /* ══ FOOTER ═════════════════════════════════════════════ */
+  footer{ margin-top:30px; font-size:11px; line-height:1.95; }
+  footer .prompt{ margin:0 0 8px; }
+  footer .out{ opacity:0.6; padding-left:2px; }
+  footer .out .hi{ color:var(--pink-hi); }
+  footer a:hover{ color:var(--pink-hi); }
+  footer .end{ margin-top:6px; }
 
-    /* Hero — slightly larger, same pink */
-    .oval-hero {
-      min-height: 38px;
-      font-size: 15px; /* Bumped up */
-    }
-
-    /* these classes kept for HTML compat but all same pink now */
-    .oval-cyan, .oval-pink {
-      background: linear-gradient(180deg,
-        #ffe4f0 0%,
-        #ffbad6 28%,
-        #ff8dba 62%,
-        #f06898 100%
-      );
-      border-color: #ffccdd;
-      text-shadow: 1px 1px 2px rgba(100,0,50,0.55);
-    }
-    .oval-cyan:hover, .oval-pink:hover {
-      background: linear-gradient(180deg,
-        #fff0f6 0%,
-        #ffd0e6 28%,
-        #ffaacf 62%,
-        #ff88b8 100%
-      );
-    }
-
-    /* ══════════════════════════════════════
-       FEATURED BOX — blue/cyan background like
-       the main content area in the screenshot
-       ══════════════════════════════════════ */
-    .featured-area {
-      margin: 10px 8px 0;
-      border: 3px outset #88aacc;
-      background: linear-gradient(135deg,
-        rgba(180,230,255,0.35) 0%,
-        rgba(100,180,255,0.25) 40%,
-        rgba(50,100,200,0.3)  100%
-      );
-      padding: 12px 10px;
-      text-align: center;
-    }
-
-    .featured-label {
-      font-family: 'Pixelated Times', 'Times New Roman', Times, serif;
-      font-style: italic;
-      font-size: 19px;
-      color: #ddeeff;
-      text-shadow: 1px 1px 0 #000044, 0 0 12px rgba(100,180,255,0.6);
-      margin-bottom: 8px; /* Increased to give it some breathing room */
-      line-height: 0.8;
-      transform: translateY(-2px);
-    }
-
-    .featured-title {
-      font-family: 'Pixelated Times', 'Times New Roman', Times, serif;
-      font-size: 24px;
-      color: #aaddff;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      text-shadow: 1px 1px 0 #000044, 2px 2px 0 rgba(0,50,150,0.5);
-      margin-bottom: 12px;
-      line-height: 0.9;
-    }
-
-    /* ══════════════════════════════════════
-       BLINK + MARQUEE
-       ══════════════════════════════════════ */
-    .mq-outer {
-      background: #000080;
-      border-top: 2px inset #8899cc;
-      border-bottom: 2px inset #8899cc;
-      overflow: hidden;
-      padding: 3px 0;
-      margin: 0;
-    }
-    .mq-inner {
-      display: inline-block;
-      white-space: nowrap;
-      padding-left: 100%;
-      animation: scroll 20s linear infinite;
-      font-size: 13px;
-      color: #aaddff;
-      font-family: 'Pixelated Times', 'Times New Roman', Times, serif;
-      letter-spacing: 0.5px;
-      transform: translateY(-2px);
-    }
-    @keyframes scroll {
-      from { transform: translateX(0); }
-      to   { transform: translateX(-100%); }
-    }
-
-    .blink { animation: blink 1s step-end infinite; }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-
-    /* ══════════════════════════════════════
-       GAME PROMO BLOCK
-       ══════════════════════════════════════ */
-    .game-promo {
-      background: #1a0010;
-      border: 3px outset #ff80aa;
-      margin: 10px 8px 0;
-    }
-
-    .game-promo-bar {
-      background: linear-gradient(90deg, #550022 0%, #cc0055 50%, #550022 100%);
-      color: #fff;
-      font-family: 'Pixelated Times', 'Times New Roman', Times, serif;
-      font-weight: bold;
-      font-size: 13px;
-      padding: 3px 8px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 2px solid #ff80aa;
-    }
-
-    .game-promo-body {
-      padding: 12px 10px 14px;
-      text-align: center;
-    }
-
-    .game-free-badge {
-      display: inline-block;
-      background: #ffcc00;
-      color: #550000;
-      font-family: 'Pixelated Times', 'Times New Roman', Times, serif;
-      font-size: 15px;
-      font-weight: bold;
-      padding: 2px 10px;
-      border: 2px outset #ffee88;
-      letter-spacing: 1px;
-      margin-bottom: 8px;
-      animation: blink 0.75s step-end infinite;
-    }
-
-    .game-title-big {
-      font-family: 'Pixelated Times', 'Times New Roman', Times, serif;
-      font-size: 34px;
-      color: #ff80aa;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      text-shadow: 2px 2px 0 #330011, -1px -1px 0 #880044;
-      line-height: 0.9;
-      margin-bottom: 4px;
-    }
-
-    .game-tagline {
-      font-family: 'Pixelated Times', 'Times New Roman', Times, serif;
-      font-size: 13px;
-      color: #cc88aa;
-      font-style: italic;
-      margin-bottom: 10px;
-      letter-spacing: 0.5px;
-    }
-
-    /* CSS mini game scene */
-    .game-screen {
-      background: #000;
-      border: 3px inset #664455;
-      margin: 0 auto 10px;
-      width: 100%;
-      max-width: 260px;
-      height: 72px;
-      position: relative;
-      overflow: hidden;
-      font-family: 'Pixelated Times', 'Times New Roman', Times, serif;
-    }
-
-    .game-screen-inner {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 12px;
-    }
-
-    .gs-wall {
-      width: 10px;
-      background: #888;
-      box-shadow: 0 0 4px #aaa;
-      align-self: stretch;
-      margin: 8px 0;
-    }
-
-    .gs-gap { width: 10px; background: transparent; }
-
-    .gs-player {
-      width: 14px; height: 14px;
-      background: radial-gradient(circle at 35% 35%, #ffaacc, #ff1493, #880033);
-      border-radius: 50%;
-      box-shadow: 0 0 6px #ff1493;
-      animation: player-bounce 0.6s ease-in-out infinite alternate;
-      flex-shrink: 0;
-    }
-
-    @keyframes player-bounce {
-      from { transform: translateY(-6px); }
-      to   { transform: translateY(6px); }
-    }
-
-    .gs-score {
-      position: absolute;
-      top: 4px; right: 6px;
-      font-size: 12px;
-      color: #00ff66;
-      font-family: 'Pixelated Times', 'Times New Roman', Times, serif;
-      letter-spacing: 1px;
-    }
-
-    .gs-label {
-      position: absolute;
-      bottom: 4px; left: 0; right: 0;
-      font-size: 11px;
-      color: #666;
-      text-align: center;
-      font-family: 'Pixelated Times', 'Times New Roman', Times, serif;
-      letter-spacing: 1px;
-    }
-
-    .game-copy {
-      font-family: 'Pixelated Times', 'Times New Roman', Times, serif;
-      font-size: 14px;
-      color: #cc88aa;
-      line-height: 1.5;
-      margin-bottom: 10px;
-    }
-
-    .game-copy strong {
-      color: #ffb3cc;
-    }
-
-    .game-stars {
-      font-size: 14px;
-      color: #ffcc00;
-      margin-bottom: 10px;
-      text-shadow: 1px 1px 0 #664400;
-    }
-
-    .play-now-btn {
-      font-size: 16px !important;
-      min-height: 40px !important;
-      max-width: 220px;
-      margin: 0 auto;
-      animation: pulse-btn 1.8s ease-in-out infinite;
-    }
-
-    @keyframes pulse-btn {
-      0%, 100% { box-shadow: 0 0 0 rgba(255,100,150,0); }
-      50%       { box-shadow: 0 0 12px rgba(255,100,150,0.6), 0 0 24px rgba(255,100,150,0.3); }
-    }
-
-    /* ══════════════════════════════════════
-       BOTTOM ICON BADGES (like the screenshot's
-       "Cool Links" / "Send me an E-mail!" row)
-       ══════════════════════════════════════ */
-    .badge-row {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      flex-wrap: wrap;
-      margin: 12px 8px 0;
-      background: #c8c4bc;
-      border: 3px outset #ffffff;
-      padding: 10px;
-    }
-
-    .badge {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      text-decoration: none;
-      cursor: default;
-    }
-
-    .badge-icon {
-      width: 38px; height: 38px;
-      border: 2px outset #aaaaaa;
-      background: linear-gradient(135deg, #ddeeff 0%, #88aadd 100%);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px;
-    }
-
-    .badge-icon.pink-bg {
-      background: linear-gradient(135deg, #ffddee 0%, #dd88aa 100%);
-    }
-    .badge-icon.green-bg {
-      background: linear-gradient(135deg, #ddeedd 0%, #88bb88 100%);
-    }
-
-    .badge-text {
-      font-size: 11px;
-      font-family: 'Pixelated Times', 'Times New Roman', Times, serif;
-      color: #220033;
-      font-weight: bold;
-      text-align: center;
-      max-width: 70px;
-      line-height: 1.1;
-    }
-
-    /* ══════════════════════════════════════
-       FOOTER / COUNTER
-       ══════════════════════════════════════ */
-    .footer {
-      margin: 10px 8px 0;
-      background: #c8c4bc;
-      border: 3px outset #ffffff;
-      padding: 8px 10px;
-      text-align: center;
-    }
-
-    .counter-display {
-      display: inline-block;
-      background: #000;
-      border: 2px inset #666;
-      padding: 3px 10px;
-      margin-bottom: 6px;
-    }
-    .counter-display span {
-      font-family: 'Pixelated Times', 'Times New Roman', Times, serif;
-      font-size: 16px;
-      color: #00ff66;
-      letter-spacing: 3px;
-    }
-
-    .footer-text {
-      font-size: 12px;
-      font-family: 'Pixelated Times', 'Times New Roman', Times, serif;
-      color: #443344;
-      line-height: 1.5;
-    }
-    .footer-text a { color: #000080; }
-
-    .ns-badge {
-      display: inline-block;
-      margin-top: 6px;
-      background: #000080;
-      border: 1px outset #8899cc;
-      padding: 2px 8px;
-      font-size: 11px;
-      color: #aaddff;
-      font-family: 'Pixelated Times', 'Times New Roman', Times, serif;
-    }
-  </style>
+  /* ══ REDUCED MOTION ═════════════════════════════════════ */
+  @media (prefers-reduced-motion:reduce){
+    .sweep,.ticker-inner,.eq i,.glitch::before,.glitch::after,.cur,
+    .stars i,.tb-stat .on,body.flicker{ animation:none !important; }
+    .sweep{ display:none; }
+    #boot{ display:none !important; }
+  }
+</style>
 </head>
 <body>
-<canvas id="bg"></canvas>
-<div class="page">
+<div class="scanlines"></div>
+<div class="vignette"></div>
+<div class="sweep"></div>
+
+<!-- BOOT -->
+<div id="boot"><span id="boot-text"></span><span class="cur"></span><span class="skip">[ tap to skip ]</span></div>
+
+<div class="term">
+
+  <!-- TITLE BAR -->
+  <div class="titlebar">
+    <span class="tb-dots"><i></i><i></i><i></i></span>
+    <span class="tb-name">millo.sys — ttyS0</span>
+    <span class="tb-stat"><span class="on">●</span> ONLINE</span>
+  </div>
 
   <!-- HEADER -->
-  <div class="site-header">
-    <div class="header-title-bar">
-      <span class="header-cursive">millo</span>
-      <span class="header-bold">Official Site</span>
+  <header>
+    <div class="logo">MILLO<span class="cur"></span></div>
+    <div class="bio">backrooms synthgaze</div>
+    <div class="stars" aria-label="5 out of 5 stars"><i>✰</i><i>✰</i><i>✰</i><i>✰</i><i>✰</i></div>
+    <div class="ticker"><span class="ticker-inner">★ NEW SINGLE "SUMMER" — 06.22.2026 ★ HIT THE WALL OUT NOW ★ STREAM ON SPOTIFY &amp; APPLE MUSIC ★ PLAY THE VIDEOGAME ★ FOLLOW @MILLO.BAND ★ </span></div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-top">
+      <canvas id="sun" width="42" height="42" aria-hidden="true"></canvas>
+      <div class="hero-meta">
+        <div class="hero-eyebrow">New single · out June 22</div>
+        <div class="hero-title glitch" data-text="SUMMER">SUMMER</div>
+      </div>
     </div>
-    <div class="header-sub">Rochester, New York &nbsp;·&nbsp; alt-rock &nbsp;·&nbsp; est. 2021</div>
-  </div>
-
-  <!-- MARQUEE -->
-  <div class="mq-outer">
-    <span class="mq-inner">
-      ★ Welcome to the official millo website ★ "Hit The Wall" out now ★ Rochester, NY ★ Stream on Spotify &amp; Apple Music ★ Play our videogame ★ Follow us everywhere ★
-    </span>
-  </div>
-
-  <!-- FEATURED AREA (blue/cyan content panel like screenshot) -->
-  <div class="featured-area">
-    <div class="featured-label">millo</div>
-    <div class="featured-title">Hit The Wall</div>
-    <a href="https://nfan.link/hit-the-wall" target="_blank" class="oval-btn oval-hero" style="max-width:240px;margin:0 auto;">
-      ♪ &nbsp;Listen Now&nbsp; ♪
+    <div class="eq" aria-hidden="true"></div>
+    <div class="countdown"><span class="lab">OUT IN </span><span id="cd">-- : -- : -- : --</span></div>
+    <a class="hero-btn" href="https://open.spotify.com/artist/5DqBbDMaCLIJEswvNl07Ys" target="_blank" rel="noopener" id="summer-link">
+      <span>▸ Listen on Spotify</span><span>↗</span>
     </a>
-    <div style="margin-top:8px; font-size:11px; color:#aaccee; font-family:Tahoma,Arial,sans-serif;">
-      <span class="blink">★</span> &nbsp;new single out now&nbsp; <span class="blink">★</span>
-    </div>
-  </div>
-
-  <!-- FEATURED LINKS -->
-  <div class="win-box">
-    <div class="win-box-title">📁 &nbsp;Featured</div>
-    <div class="win-box-body">
-      <a href="https://millo-band.github.io/millos-hit-the-wall/" target="_blank" class="oval-btn oval-cyan">
-        ▶ &nbsp;Play The Videogame
-      </a>
-      <a href="https://www.youtube.com/watch?v=6AX97O1ykZs" target="_blank" class="oval-btn">
-        ▶ &nbsp;The Making Of Hit The Wall
-      </a>
-    </div>
-  </div>
+    <div class="hero-note" id="hero-note">Out June 22 · follow on Spotify</div>
+  </section>
 
   <!-- MUSIC -->
-  <div class="win-box">
-    <div class="win-box-title">🎵 &nbsp;Stream Our Music</div>
-    <div class="win-box-body">
-      <a href="https://open.spotify.com/artist/5DqBbDMaCLIJEswvNl07Ys" target="_blank" class="oval-btn oval-cyan">
-        Spotify
-      </a>
-      <a href="https://music.apple.com/us/artist/millo/1620074008" target="_blank" class="oval-btn">
-        Apple Music
-      </a>
-      <a href="https://millo.bandcamp.com/track/infrared" target="_blank" class="oval-btn oval-cyan">
-        Bandcamp
-      </a>
-    </div>
-  </div>
+  <div class="shead">Listen</div>
+  <a class="cmd" href="https://open.spotify.com/artist/5DqBbDMaCLIJEswvNl07Ys" target="_blank" rel="noopener"><span class="arrow">▸</span><span class="name">Spotify</span><span class="lead"></span><span class="act">listen ↗</span></a>
+  <a class="cmd" href="https://music.apple.com/us/artist/millo/1620074008" target="_blank" rel="noopener"><span class="arrow">▸</span><span class="name">Apple Music</span><span class="lead"></span><span class="act">listen ↗</span></a>
+  <a class="cmd" href="https://millo.bandcamp.com/track/infrared" target="_blank" rel="noopener"><span class="arrow">▸</span><span class="name">Bandcamp</span><span class="lead"></span><span class="act">listen ↗</span></a>
+
+  <!-- WATCH & PLAY -->
+  <div class="shead">Watch &amp; Play</div>
+  <a class="cmd" href="https://millo-band.github.io/millos-hit-the-wall/" target="_blank" rel="noopener"><span class="arrow">▸</span><span class="name">Play the Videogame</span><span class="lead"></span><span class="act">play ↗</span></a>
+  <a class="cmd" href="https://www.youtube.com/watch?v=6AX97O1ykZs" target="_blank" rel="noopener"><span class="arrow">▸</span><span class="name">Watch: Making Of</span><span class="lead"></span><span class="act">watch ↗</span></a>
 
   <!-- PLAYLISTS -->
-  <div class="win-box">
-    <div class="win-box-title">📀 &nbsp;Playlists</div>
-    <div class="win-box-body">
-      <a href="https://open.spotify.com/playlist/1y0fXTIDoaBg10VTmyN5K4" target="_blank" class="oval-btn">
-        This Is Millo
-      </a>
-      <a href="https://open.spotify.com/playlist/05UXt2d2pC8IviCjaNYYa8" target="_blank" class="oval-btn">
-        millo's favorites
-      </a>
-      <a href="https://open.spotify.com/playlist/37i9dQZF1E4yC0pOQAwhcI" target="_blank" class="oval-btn">
-        Millo Radio
-      </a>
-    </div>
-  </div>
+  <div class="shead">Playlists</div>
+  <a class="cmd" href="https://open.spotify.com/playlist/1y0fXTIDoaBg10VTmyN5K4" target="_blank" rel="noopener"><span class="arrow">▸</span><span class="name">This Is Millo</span><span class="lead"></span><span class="act">open ↗</span></a>
+  <a class="cmd" href="https://open.spotify.com/playlist/05UXt2d2pC8IviCjaNYYa8" target="_blank" rel="noopener"><span class="arrow">▸</span><span class="name">millo's Favorites</span><span class="lead"></span><span class="act">open ↗</span></a>
+  <a class="cmd" href="https://open.spotify.com/playlist/37i9dQZF1E4yC0pOQAwhcI" target="_blank" rel="noopener"><span class="arrow">▸</span><span class="name">Millo Radio</span><span class="lead"></span><span class="act">open ↗</span></a>
 
   <!-- FOLLOW -->
-  <div class="win-box">
-    <div class="win-box-title">🌐 &nbsp;Find Us Online</div>
-    <div class="win-box-body">
-      <a href="https://www.instagram.com/millo.band/reels/" target="_blank" class="oval-btn oval-pink">
-        Instagram — @millo.band
-      </a>
-      <a href="https://youtu.be/wL8Z0aUSr2Q" target="_blank" class="oval-btn">
-        YouTube
-      </a>
-    </div>
-  </div>
+  <div class="shead">Follow</div>
+  <a class="cmd" href="https://www.instagram.com/millo.band/reels/" target="_blank" rel="noopener"><span class="arrow">▸</span><span class="name">Instagram<span class="sub">@millo.band</span></span><span class="lead"></span><span class="act">follow ↗</span></a>
+  <a class="cmd" href="https://youtu.be/wL8Z0aUSr2Q" target="_blank" rel="noopener"><span class="arrow">▸</span><span class="name">YouTube</span><span class="lead"></span><span class="act">follow ↗</span></a>
+  <a class="cmd" href="mailto:millo.manager@gmail.com"><span class="arrow">▸</span><span class="name">Email Us</span><span class="lead"></span><span class="act">email ↗</span></a>
 
   <!-- MORE -->
-  <div class="win-box">
-    <div class="win-box-title">✨ &nbsp;More</div>
-    <div class="win-box-body">
-      <a href="https://millo.bandcamp.com/merch" target="_blank" class="oval-btn oval-cyan">
-        Merch
-      </a>
-      <a href="https://sites.google.com/tokencreative.co/epk/home" target="_blank" class="oval-btn">
-        EPK / Press Kit
-      </a>
-    </div>
-  </div>
+  <div class="shead">More</div>
+  <a class="cmd" href="https://millo.bandcamp.com/merch" target="_blank" rel="noopener"><span class="arrow">▸</span><span class="name">Merch</span><span class="lead"></span><span class="act">shop ↗</span></a>
+  <a class="cmd" href="https://sites.google.com/tokencreative.co/epk/home" target="_blank" rel="noopener"><span class="arrow">▸</span><span class="name">Press Kit</span><span class="lead"></span><span class="act">view ↗</span></a>
 
-  <!-- GAME SECTION -->
-  <div class="win-box" id="game-box">
-    <div class="win-box-title">🕹️ &nbsp;Play Our Game</div>
-    <div class="win-box-body" style="text-align:center; padding:16px 12px 18px;">
-      <div style="font-family:Impact,'Arial Black',sans-serif;font-size:26px;color:#330011;letter-spacing:2px;margin-bottom:4px;">HIT THE WALL</div>
-      <div style="font-family:Tahoma,Arial,sans-serif;font-size:11px;color:#774455;font-style:italic;margin-bottom:10px;">millo's official free browser game</div>
-      <div style="font-family:Arial,sans-serif;font-size:12px;color:#443333;line-height:1.7;margin-bottom:14px;">
-        Dodge obstacles, smash through walls.<br>How long can you survive?
-      </div>
-      <a href="https://millo-band.github.io/millos-hit-the-wall/" target="_blank" class="oval-btn" style="max-width:200px;margin:0 auto;font-size:15px;min-height:42px;">
-        ▶ &nbsp;PLAY FREE ONLINE
-      </a>
+  <!-- GAME -->
+  <div class="shead">Play Our Game</div>
+  <section class="game">
+    <div class="game-h">HIT THE WALL</div>
+    <div class="game-sub">millo's official free browser game. dodge obstacles, smash through walls. how long can you survive?</div>
+    <div class="game-screen" aria-hidden="true">
+      <canvas id="maze"></canvas>
+      <div class="gs-score">0000</div>
+      <div class="gs-label">// seeking CDs...</div>
     </div>
-  </div>
-
-  <!-- BADGE ROW (like Cool Links / Send me an E-mail) -->
-  <div class="badge-row">
-    <a href="mailto:millo.manager@gmail.com" class="badge">
-      <div class="badge-icon pink-bg">✉️</div>
-      <span class="badge-text">Send me an E-mail!</span>
-    </a>
-    <a href="https://millo.bandcamp.com/merch" target="_blank" class="badge">
-      <div class="badge-icon">🛍️</div>
-      <span class="badge-text">Cool Merch!</span>
-    </a>
-    <a href="https://sites.google.com/tokencreative.co/epk/home" target="_blank" class="badge">
-      <div class="badge-icon green-bg">📋</div>
-      <span class="badge-text">Press Kit</span>
-    </a>
-    <a href="https://www.instagram.com/millo.band/reels/" target="_blank" class="badge">
-      <div class="badge-icon pink-bg">📸</div>
-      <span class="badge-text">Instagram</span>
-    </a>
-  </div>
+    <a class="hero-btn" href="https://millo-band.github.io/millos-hit-the-wall/" target="_blank" rel="noopener"><span>▸ play free online</span><span>↗</span></a>
+  </section>
 
   <!-- FOOTER -->
-  <div class="footer">
-    <div class="counter-display">
-      <span id="live-count-digits">004291</span>
-    </div>
-    <div class="footer-text">
-      You are visitor #<span id="live-count-text">4,291</span><br>
-      © 2024 millo &nbsp;·&nbsp; Rochester, New York<br>
-      <a href="mailto:millo.manager@gmail.com">millo.manager@gmail.com</a>
-    </div>
-    <div class="ns-badge">Best viewed in Netscape Navigator 4.0 at 800×600</div>
-  </div>
+  <footer>
+    <div class="prompt"><span class="u">millo@rochester</span><span class="p">:~$</span> uptime<span class="cur"></span></div>
+    <div class="out">visitors: <span class="hi" id="visitors">000000</span> &nbsp;//&nbsp; best viewed loud</div>
+    <div class="out">© 2026 millo &nbsp;//&nbsp; <a href="mailto:millo.manager@gmail.com">millo.manager@gmail.com</a></div>
+    <div class="prompt end"><span class="u">millo@rochester</span><span class="p">:~$</span> <span class="cur"></span></div>
+  </footer>
 
 </div>
+
 <script>
-  // ── Live Counter Logic ────────────────────────────
-  function updateCounter() {
-    // We set a base "launch" date
-    const launchDate = new Date('2024-05-15T00:00:00').getTime();
-    const now = Date.now();
-    
-    // Calculate how many hours have passed since launch
-    const hoursSinceLaunch = Math.max(0, (now - launchDate) / (1000 * 60 * 60));
-    
-    // Base count (4291) + simulate roughly 1.8 new visitors every hour
-    const calculatedVisits = Math.floor(4291 + (hoursSinceLaunch * 1.8));
-    
-    // Track local visits using the user's browser storage
-    let localBumps = parseInt(localStorage.getItem('millo_bumps') || '0');
-    
-    // If it's a new session (they just opened the tab), give them a bump!
-    if (!sessionStorage.getItem('millo_counted')) {
-      localBumps++;
-      localStorage.setItem('millo_bumps', localBumps);
-      sessionStorage.setItem('millo_counted', 'true');
-    }
-    
-    const totalVisits = calculatedVisits + localBumps;
-    
-    // Update the numbers in the HTML
-    document.getElementById('live-count-digits').textContent = String(totalVisits).padStart(6, '0');
-    document.getElementById('live-count-text').textContent = totalVisits.toLocaleString('en-US');
-  }
-  updateCounter();
+(function(){
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var RELEASE = new Date(2026, 5, 22, 0, 0, 0); // June 22 2026
 
-  // ── Canvas setup ──────────────────────────────────
-  const canvas = document.getElementById('bg');
-  const ctx = canvas.getContext('2d');
-  let W, H;
-  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
-  resize();
-  window.addEventListener('resize', resize);
-
-  const rnd = (a, b) => a + Math.random() * (b - a);
-  const PI2 = Math.PI * 2;
-
-  // ── 3-D math ──────────────────────────────────────
-  function rotX([x,y,z],a){ return [x, y*Math.cos(a)-z*Math.sin(a), y*Math.sin(a)+z*Math.cos(a)]; }
-  function rotY([x,y,z],a){ return [x*Math.cos(a)+z*Math.sin(a), y, -x*Math.sin(a)+z*Math.cos(a)]; }
-  function rotZ([x,y,z],a){ return [x*Math.cos(a)-y*Math.sin(a), x*Math.sin(a)+y*Math.cos(a), z]; }
-
-  // pink wireframe stroke — vary alpha by shape
-  function pinkStroke(alpha) { return `rgba(255,105,180,${alpha})`; }
-
-  // ── Wireframe Sphere ──────────────────────────────
-  class WireSphere {
-    constructor(scatter) {
-      this.r   = rnd(55, 120);
-      this.x   = scatter ? rnd(0, W) : (Math.random()<.5 ? -this.r-10 : W+this.r+10);
-      this.y   = scatter ? rnd(0, H) : rnd(0, H);
-      const sp = rnd(0.05, 0.14), ang = rnd(0, PI2);
-      this.vx  = Math.cos(ang)*sp;
-      this.vy  = Math.sin(ang)*sp;
-      this.rx  = rnd(0, PI2); this.ry = rnd(0, PI2);
-      this.drx = rnd(-0.007, 0.007);
-      this.dry = rnd(-0.011, 0.011);
-      this.alpha = rnd(0.35, 0.65);
-    }
-
-    update() {
-      this.x += this.vx; this.y += this.vy;
-      this.rx += this.drx; this.ry += this.dry;
-      const pad = this.r + 30;
-      if (this.x < -pad || this.x > W+pad || this.y < -pad || this.y > H+pad)
-        Object.assign(this, new WireSphere(false));
-    }
-
-    draw() {
-      const NLAT = 7, NLON = 10;
-      ctx.strokeStyle = pinkStroke(this.alpha);
-      ctx.lineWidth = 1;
-
-      // latitude rings
-      for (let i = 1; i < NLAT; i++) {
-        const phi = (i / NLAT) * Math.PI;
-        ctx.beginPath();
-        for (let j = 0; j <= NLON; j++) {
-          const theta = (j / NLON) * PI2;
-          let v = [this.r*Math.sin(phi)*Math.cos(theta), this.r*Math.cos(phi), this.r*Math.sin(phi)*Math.sin(theta)];
-          v = rotX(v, this.rx); v = rotY(v, this.ry);
-          j === 0 ? ctx.moveTo(this.x+v[0], this.y+v[1]) : ctx.lineTo(this.x+v[0], this.y+v[1]);
+  // ── PIXEL-ART SUNSET (drawn once) ──────────────────────
+  (function sun(){
+    var c = document.getElementById('sun'); if(!c) return;
+    var ctx = c.getContext('2d'), W=42, H=42;
+    var PINK='#FF91AF', HI='#FFC1D4', DIM='#9c576c', BG='#070409';
+    ctx.fillStyle=BG; ctx.fillRect(0,0,W,H);
+    var cx=21, cy=17, r=10;
+    // Bayer 4x4 dither threshold map
+    var bayer=[[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]];
+    for(var y=0;y<H;y++){
+      for(var x=0;x<W;x++){
+        var dx=x-cx, dy=y-cy, d=Math.sqrt(dx*dx+dy*dy);
+        var col=null;
+        if(y<=24){ // sky + sun
+          if(d<r){ col = d<r*0.55 ? HI : PINK; }
+          else if(d<r+4){ // dithered halo
+            var t=(d-r)/4; if(bayer[y%4][x%4]/16 > t) col=PINK;
+          }
+        } else { // water reflection: horizontal scanline bars
+          if((y%2===0) && Math.abs(dx) < (r+5)){
+            var fade = 1-(y-25)/16;
+            if(bayer[y%4][x%4]/16 < fade*0.8) col = (y%4===0?DIM:PINK);
+          }
         }
-        ctx.closePath(); ctx.stroke();
-      }
-
-      // longitude lines
-      for (let j = 0; j < NLON; j++) {
-        const theta = (j / NLON) * PI2;
-        ctx.beginPath();
-        for (let i = 0; i <= NLAT; i++) {
-          const phi = (i / NLAT) * Math.PI;
-          let v = [this.r*Math.sin(phi)*Math.cos(theta), this.r*Math.cos(phi), this.r*Math.sin(phi)*Math.sin(theta)];
-          v = rotX(v, this.rx); v = rotY(v, this.ry);
-          i === 0 ? ctx.moveTo(this.x+v[0], this.y+v[1]) : ctx.lineTo(this.x+v[0], this.y+v[1]);
-        }
-        ctx.stroke();
+        if(col){ ctx.fillStyle=col; ctx.fillRect(x,y,1,1); }
       }
     }
-  }
+    // horizon line
+    ctx.fillStyle=DIM; ctx.fillRect(0,24,W,1);
+  })();
 
-  // ── Wireframe Pyramid ─────────────────────────────
-  class WirePyramid {
-    constructor(scatter) {
-      this.s   = rnd(55, 105);
-      this.x   = scatter ? rnd(0, W) : (Math.random()<.5 ? -200 : W+200);
-      this.y   = scatter ? rnd(0, H) : rnd(0, H);
-      const sp = rnd(0.04, 0.13), ang = rnd(0, PI2);
-      this.vx  = Math.cos(ang)*sp;
-      this.vy  = Math.sin(ang)*sp;
-      this.rx  = rnd(0,PI2); this.ry = rnd(0,PI2); this.rz = rnd(0,PI2);
-      this.drx = rnd(-0.012,0.012); this.dry = rnd(-0.016,0.016); this.drz = rnd(-0.008,0.008);
-      this.alpha = rnd(0.35, 0.65);
+  // ── EQUALIZER BARS ─────────────────────────────────────
+  (function eq(){
+    var wrap=document.querySelector('.eq'); if(!wrap) return;
+    var N=22;
+    for(var i=0;i<N;i++){
+      var b=document.createElement('i');
+      var dur=(0.6+Math.random()*0.8).toFixed(2);
+      var delay=(Math.random()*-1.2).toFixed(2);
+      b.style.animationDuration=dur+'s';
+      b.style.animationDelay=delay+'s';
+      if(reduce) b.style.transform='scaleY('+(0.3+Math.random()*0.7).toFixed(2)+')';
+      wrap.appendChild(b);
+    }
+  })();
+
+  // ── COUNTDOWN (live, ticking) ──────────────────────────
+  var cd=document.getElementById('cd'), note=document.getElementById('hero-note'), link=document.getElementById('summer-link');
+  function pad(n){ return n<10?'0'+n:''+n; }
+  function tickCd(){
+    var diff=RELEASE-new Date();
+    if(diff<=0){
+      cd.textContent='OUT NOW ✦';
+      document.querySelector('.countdown .lab').textContent='';
+      note.textContent='Out now · stream everywhere';
+      link.innerHTML='<span>▸ Listen on Spotify</span><span>↗</span>';
+      return false;
+    }
+    var d=Math.floor(diff/864e5),h=Math.floor(diff%864e5/36e5),m=Math.floor(diff%36e5/6e4),s=Math.floor(diff%6e4/1e3);
+    cd.textContent=pad(d)+'D : '+pad(h)+'H : '+pad(m)+'M : '+pad(s)+'S';
+    return true;
+  }
+  if(tickCd()) setInterval(tickCd,1000);
+
+  // ── VISITOR COUNTER (animated roll-up) ─────────────────
+  (function(){
+    var el=document.getElementById('visitors');
+    var target=4291+Math.floor(Date.now()/36e5%9999);
+    if(reduce){ el.textContent=String(target).padStart(6,'0'); return; }
+    var cur=Math.max(0,target-60), step=0;
+    var iv=setInterval(function(){
+      cur+=Math.ceil((target-cur)/8)||1;
+      if(cur>=target){ cur=target; clearInterval(iv); }
+      el.textContent=String(cur).padStart(6,'0');
+      if(++step>40){ el.textContent=String(target).padStart(6,'0'); clearInterval(iv); }
+    },40);
+  })();
+
+  // ── BOOT SEQUENCE (once, skippable) ────────────────────
+  (function boot(){
+    var boot=document.getElementById('boot'), out=document.getElementById('boot-text');
+    if(reduce || !boot){ if(boot) boot.classList.add('done'); return; }
+    if(!document.body.matches(':hover')) document.body.classList.add('flicker');
+    var lines=[
+      'MILLO/OS 2.6.26',
+      '(c) 2021-2026 millo industries // rochester ny',
+      '',
+      '> mounting /dev/audio ............ [ <span class="ok">OK</span> ]',
+      '> establishing uplink ........... [ <span class="ok">OK</span> ]',
+      '> scanning for transmissions ....',
+      '> FOUND: <span class="ok">"SUMMER"</span> // 06.22.2026',
+      '> stand by_'
+    ];
+    var i=0, buf='';
+    function next(){
+      if(i>=lines.length){ setTimeout(function(){ boot.classList.add('done'); },420); return; }
+      buf += lines[i] + '\n'; out.innerHTML=buf; i++;
+      setTimeout(next, i<3?120:170);
+    }
+    function skip(){ boot.classList.add('done'); document.removeEventListener('keydown',skip); }
+    boot.addEventListener('click',skip);
+    document.addEventListener('keydown',skip);
+    next();
+    setTimeout(function(){ if(!boot.classList.contains('done')) boot.classList.add('done'); }, 3200);
+  })();
+
+  // ── HIT THE WALL: first-person wireframe maze (Hover!-style) ──
+  (function maze(){
+    var cv=document.getElementById('maze'); if(!cv) return;
+    var ctx=cv.getContext('2d'); if(!ctx) return;
+    var scoreEl=document.querySelector('.gs-score');
+    var dpr=Math.min(window.devicePixelRatio||1,2);
+    var Wc=0,Hc=0,f=0;
+    function resize(){
+      Wc=cv.clientWidth||300; Hc=cv.clientHeight||132;
+      cv.width=Math.round(Wc*dpr); cv.height=Math.round(Hc*dpr);
+      ctx.setTransform(dpr,0,0,dpr,0,0); f=Hc*1.15;
     }
 
-    update() {
-      this.x += this.vx; this.y += this.vy;
-      this.rx += this.drx; this.ry += this.dry; this.rz += this.drz;
-      const pad = this.s * 3;
-      if (this.x < -pad || this.x > W+pad || this.y < -pad || this.y > H+pad)
-        Object.assign(this, new WirePyramid(false));
+    var PINK='#FF91AF', HI='#FFC1D4';
+    var halfW=1.05, top=0.6, bot=-0.6;          // corridor half-width / ceiling / floor
+    var ZNEAR=0.34, ZFAR=7.0, STEP=0.5;          // depth sampling
+    var A=0.5;                                   // maze "weave" amplitude
+    function bend(u){ return A*Math.sin(u*0.55) + 0.22*Math.sin(u*1.7+1.1); }
+
+    var T=0, score=0;
+    var cd={ z:ZFAR, x:0, rot:0 };
+    function spawnCD(){ cd.z=ZFAR; cd.x=(Math.random()*1.3-0.65); }
+
+    function P(x,y,z){ return [ Wc/2 + x*f/z, Hc/2 - y*f/z ]; }
+    function L(a,b,col,w){ ctx.beginPath(); ctx.moveTo(a[0],a[1]); ctx.lineTo(b[0],b[1]); ctx.strokeStyle=col; ctx.lineWidth=w||1; ctx.stroke(); }
+
+    function frame(dt){
+      ctx.clearRect(0,0,Wc,Hc);
+      var camX=bend(T);
+      var pL=null,pR=null,pLt=null,pRt=null;
+      for(var z=ZFAR; z>=ZNEAR-0.001; z-=STEP){
+        var c=bend(T+z)-camX, lx=c-halfW, rx=c+halfW;
+        var Lb=P(lx,bot,z), Rb=P(rx,bot,z), Lt=P(lx,top,z), Rt=P(rx,top,z);
+        var col='rgba(255,145,175,'+(0.18+0.6*((ZFAR-z)/ZFAR)).toFixed(3)+')';
+        L(Lb,Lt,col,1); L(Rb,Rt,col,1);            // wall ribs
+        L(Lb,Rb,col,1); L(Lt,Rt,col,1);            // floor + ceiling cross
+        if(pL){ L(Lb,pL,col,1); L(Rb,pR,col,1); L(Lt,pLt,col,1); L(Rt,pRt,col,1); } // longitudinal edges
+        pL=Lb; pR=Rb; pLt=Lt; pRt=Rt;
+      }
+      // CD collectible
+      var cdc=bend(T+cd.z)-camX+cd.x;
+      var p=P(cdc,0,cd.z), r=f*0.17/cd.z;
+      cd.rot+=dt*3.2;
+      var sx=Math.max(0.12,Math.abs(Math.cos(cd.rot)));   // spin → width oscillation
+      ctx.save(); ctx.translate(p[0],p[1]);
+      ctx.strokeStyle=HI; ctx.lineWidth=1.4;
+      ctx.beginPath(); ctx.ellipse(0,0,Math.max(2,r*sx),r,0,0,Math.PI*2); ctx.stroke();
+      ctx.strokeStyle=PINK; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.ellipse(0,0,Math.max(1,r*sx*0.3),r*0.3,0,0,Math.PI*2); ctx.stroke();
+      ctx.strokeStyle=HI; ctx.beginPath(); ctx.moveTo(-r*sx*0.55,-r*0.55); ctx.lineTo(0,0); ctx.stroke();
+      ctx.restore();
+      cd.z-=dt*1.7;
+      if(cd.z<=ZNEAR){ score+=10; if(scoreEl) scoreEl.textContent=String(score).padStart(4,'0'); spawnCD(); }
     }
 
-    draw() {
-      const s = this.s;
-      const raw = [[-s,s,-s],[s,s,-s],[s,s,s],[-s,s,s],[0,-s*1.4,0]];
-      const rv  = raw.map(v => rotZ(rotY(rotX(v,this.rx),this.ry),this.rz));
-      const pv  = rv.map(v => [this.x+v[0], this.y+v[1]]);
+    var last=0, raf=0, running=false;
+    function loop(ts){ if(!running) return; var dt=Math.min(0.05,(ts-last)/1000||0); last=ts; T+=dt*1.3; frame(dt); raf=requestAnimationFrame(loop); }
+    function start(){ if(running||reduce) return; running=true; last=performance.now(); raf=requestAnimationFrame(loop); }
+    function stop(){ running=false; if(raf) cancelAnimationFrame(raf); }
 
-      // base square + 4 edges to apex
-      const edges = [[0,1],[1,2],[2,3],[3,0],[0,4],[1,4],[2,4],[3,4]];
+    resize(); window.addEventListener('resize',function(){ resize(); if(!running) frame(0); });
 
-      ctx.strokeStyle = pinkStroke(this.alpha);
-      ctx.lineWidth = 1.2;
-      edges.forEach(([a,b]) => {
-        ctx.beginPath();
-        ctx.moveTo(pv[a][0], pv[a][1]);
-        ctx.lineTo(pv[b][0], pv[b][1]);
-        ctx.stroke();
-      });
-    }
-  }
-
-  // ── Scene ─────────────────────────────────────────
-  const shapes = [
-    ...Array.from({length:6}, () => new WireSphere(true)),
-    ...Array.from({length:6}, () => new WirePyramid(true)),
-  ];
-
-  function tick() {
-    ctx.fillStyle = 'rgba(8,0,40,0.055)'; // slow fade = long echo trail
-    ctx.fillRect(0, 0, W, H);
-    shapes.forEach(s => { s.update(); s.draw(); });
-    requestAnimationFrame(tick);
-  }
-
-  ctx.fillStyle = '#080028';
-  ctx.fillRect(0, 0, W, H);
-  requestAnimationFrame(tick);
-
-  // ── Collapseable sections ─────────────────────────
-  document.querySelectorAll('.win-box').forEach(box => {
-    const title = box.querySelector('.win-box-title');
-    const body  = box.querySelector('.win-box-body');
-    if (!title || !body) return;
-
-    const btn = document.createElement('div');
-    btn.className = 'min-btn';
-    btn.textContent = '−';
-    title.appendChild(btn);
-
-    btn.addEventListener('click', e => {
-      e.stopPropagation();
-      const open = body.style.display !== 'none';
-      body.style.display = open ? 'none' : '';
-      btn.textContent = open ? '+' : '−';
-    });
-  });
+    if(reduce){ T=0.6; cd.z=2.4; frame(0); return; }
+    if('IntersectionObserver' in window){
+      new IntersectionObserver(function(es){ es.forEach(function(e){ e.isIntersecting?start():stop(); }); },{threshold:0.05}).observe(cv);
+    } else start();
+    document.addEventListener('visibilitychange',function(){ document.hidden?stop():(document.querySelector('.game-screen')?start():0); });
+  })();
+})();
 </script>
 </body>
 </html>
