@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>MILLO // TERMINAL</title>
 <meta name="description" content="millo — alt-rock from Rochester, NY. New single 'Summer' OUT NOW. Stream everywhere, play the game, follow along." />
-<meta name="theme-color" content="#070409" />
+<meta name="theme-color" content="#00AFFE" />
 
 <meta property="og:title" content="MILLO // SUMMER — OUT NOW" />
 <meta property="og:description" content="New single 'Summer' is out now. Stream everywhere, play the game, follow along." />
@@ -23,23 +23,52 @@
 
 <style>
   :root{
+    /* ── NIGHT (default) ── */
     --pink:#FF91AF;
     --pink-hi:#FFC1D4;
     --pink-dim:rgba(255,145,175,0.55);
     --pink-faint:rgba(255,145,175,0.22);
     --bg:#070409;
+    --ink:#FF91AF;
     --glow:0 0 4px rgba(255,145,175,0.45);
+    --page-bg:#070409;
+    --scan:rgba(0,0,0,0.28);
+    --vig:rgba(0,0,0,0.55);
+    --sweep:rgba(255,145,175,0.06);
+    --lead-inv:rgba(7,4,9,0.4);
+    --game-bg:#050007;
+    --logo-glow:0 0 8px rgba(255,145,175,0.5);
+    --title-glow:0 0 10px rgba(255,145,175,0.5);
     --mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
     --pixel:'Press Start 2P',var(--mono);
+  }
+  /* ── SUMMER MODE ── */
+  body.summer{
+    --pink:#00AFFE;
+    --pink-hi:#0077CC;
+    --pink-dim:rgba(0,175,254,0.55);
+    --pink-faint:rgba(0,175,254,0.32);
+    --bg:#ffffff;
+    --ink:#0a4a6b;
+    --glow:none;
+    --page-bg:linear-gradient(180deg,#ffffff 0%,#eaf7ff 55%,#dff3ff 100%);
+    --scan:rgba(0,135,199,0.06);
+    --vig:rgba(0,175,254,0.12);
+    --sweep:rgba(0,175,254,0.08);
+    --lead-inv:rgba(255,255,255,0.55);
+    --game-bg:linear-gradient(180deg,#eaf7ff,#d4eeff);
+    --logo-glow:0 0 10px rgba(0,175,254,0.35);
+    --title-glow:0 0 10px rgba(0,175,254,0.35);
   }
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
   html{ -webkit-text-size-adjust:100%; background:var(--bg); }
   body{
-    background:var(--bg); color:var(--pink);
+    background:var(--page-bg);
+    background-attachment:fixed; color:var(--ink);
     font-family:var(--mono); font-size:14px; line-height:1.5;
     -webkit-font-smoothing:antialiased; min-height:100vh;
     text-shadow:var(--glow);
-    overflow-x:hidden;
+    overflow-x:hidden; transition:color .25s,background-color .25s;
   }
   a{ color:inherit; text-decoration:none; -webkit-tap-highlight-color:transparent; }
 
@@ -47,16 +76,16 @@
   .scanlines{
     position:fixed; inset:0; z-index:9000; pointer-events:none;
     background:repeating-linear-gradient(0deg,
-      rgba(0,0,0,0) 0 2px, rgba(0,0,0,0.28) 2px 3px);
+      transparent 0 2px, var(--scan) 2px 3px);
   }
   .vignette{
     position:fixed; inset:0; z-index:9001; pointer-events:none;
-    background:radial-gradient(ellipse 90% 80% at 50% 45%,
-      transparent 55%, rgba(0,0,0,0.55) 100%);
+    background:radial-gradient(ellipse 95% 85% at 50% 40%,
+      transparent 60%, var(--vig) 100%);
   }
   .sweep{
     position:fixed; left:0; right:0; height:120px; z-index:9002; pointer-events:none;
-    background:linear-gradient(180deg, transparent, rgba(255,145,175,0.06), transparent);
+    background:linear-gradient(180deg, transparent, var(--sweep), transparent);
     animation:sweep 7s linear infinite;
   }
   @keyframes sweep{ from{ transform:translateY(-130px);} to{ transform:translateY(100vh);} }
@@ -84,6 +113,14 @@
   .tb-name{ opacity:0.85; }
   .tb-stat{ margin-left:auto; opacity:0.45; font-size:9px; }
   .tb-stat .on{ color:var(--pink-hi); animation:blink 1.4s step-end infinite; }
+  .theme-toggle{
+    margin-left:10px; font-family:var(--mono); font-size:9px; letter-spacing:0.1em;
+    text-transform:uppercase; color:var(--pink); background:transparent;
+    border:1px solid var(--pink-faint); padding:3px 7px; cursor:pointer;
+    text-shadow:var(--glow); transition:background .12s,color .12s;
+  }
+  .theme-toggle:hover{ background:var(--pink); color:var(--bg); text-shadow:none; }
+  .theme-toggle:active{ transform:translateY(1px); }
 
   /* ══ BOOT OVERLAY ═══════════════════════════════════════ */
   #boot{
@@ -100,11 +137,11 @@
 
   /* ══ HEADER / IDENTITY ══════════════════════════════════ */
   header{ padding:26px 0 14px; }
-  .logo{ font-family:var(--pixel); font-size:30px; line-height:1; letter-spacing:0.02em; text-shadow:0 0 8px rgba(255,145,175,0.5); }
+  .logo{ font-family:var(--pixel); font-size:30px; line-height:1; letter-spacing:0.02em; color:var(--pink); text-shadow:var(--logo-glow); }
   .logo .cur{ height:0.8em; width:0.5em; margin-left:4px; }
   .bio{ margin-top:13px; font-size:14px; font-style:italic; letter-spacing:0.04em; color:var(--pink-hi); opacity:0.85; }
   .stars{ margin-top:9px; display:flex; gap:11px; }
-  .stars i{ font-style:normal; font-size:14px; color:var(--pink); text-shadow:0 0 6px rgba(255,145,175,0.55); animation:twinkle 2.6s ease-in-out infinite; }
+  .stars i{ font-style:normal; font-size:14px; color:var(--pink); text-shadow:var(--glow); animation:twinkle 2.6s ease-in-out infinite; }
   .stars i:nth-child(2){ animation-delay:.35s }
   .stars i:nth-child(3){ animation-delay:.7s }
   .stars i:nth-child(4){ animation-delay:1.05s }
@@ -144,7 +181,7 @@
   .cmd .act{ flex-shrink:0; opacity:0.55; font-size:11px; letter-spacing:0.06em; }
   .cmd:hover, .cmd:focus-visible{ background:var(--pink); color:var(--bg); outline:none; text-shadow:none; }
   .cmd:hover .arrow, .cmd:hover .act{ opacity:1; }
-  .cmd:hover .lead{ border-bottom-color:rgba(7,4,9,0.4); }
+  .cmd:hover .lead{ border-bottom-color:var(--lead-inv); }
   .cmd:hover .name::after{ content:'█'; margin-left:7px; animation:blink .7s step-end infinite; }
   .cmd:active{ transform:translateX(2px); }
 
@@ -158,7 +195,7 @@
   .cover img{ width:100%; height:auto; display:block; filter:saturate(1.05) contrast(1.03); transition:filter .2s,transform .3s; }
   .cover::after{ content:''; position:absolute; inset:0; pointer-events:none;
     background:repeating-linear-gradient(0deg, rgba(0,0,0,0) 0 2px, rgba(0,0,0,0.16) 2px 3px),
-      radial-gradient(ellipse 100% 90% at 50% 45%, transparent 60%, rgba(255,145,175,0.12) 100%);
+      radial-gradient(ellipse 100% 90% at 50% 45%, transparent 60%, rgba(0,175,254,0.12) 100%);
     mix-blend-mode:multiply; }
   .cover .cover-tag{ position:absolute; top:8px; right:8px; z-index:2; font-family:var(--pixel); font-size:8px; letter-spacing:0.14em;
     color:var(--bg); background:var(--pink); padding:5px 7px; text-shadow:none; animation:blink 1.6s step-end infinite; }
@@ -167,7 +204,7 @@
   .hero-eyebrow{ font-size:10px; opacity:0.6; letter-spacing:0.12em; }
   .hero-title{
     font-family:var(--pixel); font-size:34px; line-height:1; letter-spacing:0.02em; margin:8px 0 6px;
-    position:relative; text-shadow:0 0 10px rgba(255,145,175,0.5);
+    position:relative; color:var(--pink); text-shadow:var(--title-glow);
   }
   @media (max-width:380px){ .hero-title{ font-size:27px; } }
   .glitch::before,.glitch::after{
@@ -200,9 +237,9 @@
   .game{ margin-top:22px; border:1px solid var(--pink-faint); padding:16px; }
   .game-h{ font-family:var(--pixel); font-size:14px; letter-spacing:0.04em; margin-bottom:10px; }
   .game-sub{ font-size:11px; opacity:0.6; line-height:1.7; margin-bottom:12px; }
-  .game-screen{ position:relative; height:132px; border:1px solid var(--pink-faint); overflow:hidden; margin-bottom:12px; background:#050007; }
+  .game-screen{ position:relative; height:132px; border:1px solid var(--pink-faint); overflow:hidden; margin-bottom:12px; background:var(--game-bg); }
   #maze{ display:block; width:100%; height:100%; }
-  .gs-score{ position:absolute; top:5px; right:8px; font-size:9px; color:var(--pink-hi); letter-spacing:0.1em; text-shadow:0 0 5px rgba(255,145,175,0.6); }
+  .gs-score{ position:absolute; top:5px; right:8px; font-size:9px; color:var(--pink-hi); letter-spacing:0.1em; text-shadow:var(--glow); }
   .gs-label{ position:absolute; bottom:5px; left:8px; font-size:8px; color:var(--pink-dim); letter-spacing:0.12em; }
 
   /* ══ FOOTER ═════════════════════════════════════════════ */
@@ -222,7 +259,7 @@
   }
 </style>
 </head>
-<body>
+<body class="summer">
 <div class="scanlines"></div>
 <div class="vignette"></div>
 <div class="sweep"></div>
@@ -237,6 +274,7 @@
     <span class="tb-dots"><i></i><i></i><i></i></span>
     <span class="tb-name">millo.sys — ttyS0</span>
     <span class="tb-stat"><span class="on">●</span> ONLINE</span>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-pressed="true" aria-label="Toggle summer mode">☀ summer</button>
   </div>
 
   <!-- HEADER -->
@@ -332,7 +370,7 @@
   (function sun(){
     var c = document.getElementById('sun'); if(!c) return;
     var ctx = c.getContext('2d'), W=42, H=42;
-    var PINK='#FF91AF', HI='#FFC1D4', DIM='#9c576c', BG='#070409';
+    var PINK='#00AFFE', HI='#0077CC', DIM='#9c576c', BG='#070409';
     ctx.fillStyle=BG; ctx.fillRect(0,0,W,H);
     var cx=21, cy=17, r=10;
     // Bayer 4x4 dither threshold map
@@ -434,6 +472,24 @@
     setTimeout(function(){ if(!boot.classList.contains('done')) boot.classList.add('done'); }, 3200);
   })();
 
+  // ── THEME TOGGLE (summer / night, persisted) ───────────
+  (function theme(){
+    var KEY='millo-theme', btn=document.getElementById('themeToggle');
+    function apply(mode){
+      var summer = mode!=='night';
+      document.body.classList.toggle('summer', summer);
+      if(btn){ btn.textContent = summer ? '☀ summer' : '☾ night'; btn.setAttribute('aria-pressed', String(summer)); }
+      window.dispatchEvent(new Event('millo:theme'));
+    }
+    var saved=null; try{ saved=localStorage.getItem(KEY); }catch(e){}
+    apply(saved || 'summer');
+    if(btn) btn.addEventListener('click', function(){
+      var next = document.body.classList.contains('summer') ? 'night' : 'summer';
+      apply(next);
+      try{ localStorage.setItem(KEY, next); }catch(e){}
+    });
+  })();
+
   // ── HIT THE WALL: first-person wireframe maze (Hover!-style) ──
   (function maze(){
     var cv=document.getElementById('maze'); if(!cv) return;
@@ -447,7 +503,14 @@
       ctx.setTransform(dpr,0,0,dpr,0,0); f=Hc*1.15;
     }
 
-    var PINK='#FF91AF', HI='#FFC1D4';
+    var PINK='#00AFFE', HI='#0077CC';
+    function readColors(){
+      var s=getComputedStyle(document.body);
+      PINK=(s.getPropertyValue('--pink')||'').trim()||PINK;
+      HI=(s.getPropertyValue('--pink-hi')||'').trim()||HI;
+    }
+    readColors();
+    window.addEventListener('millo:theme', readColors);
     var halfW=1.05, top=0.6, bot=-0.6;          // corridor half-width / ceiling / floor
     var ZNEAR=0.34, ZFAR=7.0, STEP=0.5;          // depth sampling
     var A=0.5;                                   // maze "weave" amplitude
@@ -467,12 +530,13 @@
       for(var z=ZFAR; z>=ZNEAR-0.001; z-=STEP){
         var c=bend(T+z)-camX, lx=c-halfW, rx=c+halfW;
         var Lb=P(lx,bot,z), Rb=P(rx,bot,z), Lt=P(lx,top,z), Rt=P(rx,top,z);
-        var col='rgba(255,145,175,'+(0.18+0.6*((ZFAR-z)/ZFAR)).toFixed(3)+')';
-        L(Lb,Lt,col,1); L(Rb,Rt,col,1);            // wall ribs
-        L(Lb,Rb,col,1); L(Lt,Rt,col,1);            // floor + ceiling cross
-        if(pL){ L(Lb,pL,col,1); L(Rb,pR,col,1); L(Lt,pLt,col,1); L(Rt,pRt,col,1); } // longitudinal edges
+        ctx.globalAlpha=0.18+0.6*((ZFAR-z)/ZFAR);
+        L(Lb,Lt,PINK,1); L(Rb,Rt,PINK,1);          // wall ribs
+        L(Lb,Rb,PINK,1); L(Lt,Rt,PINK,1);          // floor + ceiling cross
+        if(pL){ L(Lb,pL,PINK,1); L(Rb,pR,PINK,1); L(Lt,pLt,PINK,1); L(Rt,pRt,PINK,1); } // longitudinal edges
         pL=Lb; pR=Rb; pLt=Lt; pRt=Rt;
       }
+      ctx.globalAlpha=1;
       // CD collectible
       var cdc=bend(T+cd.z)-camX+cd.x;
       var p=P(cdc,0,cd.z), r=f*0.17/cd.z;
