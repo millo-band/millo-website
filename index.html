@@ -4,21 +4,17 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>MILLO // TERMINAL</title>
-<meta name="description" content="millo — alt-rock from Rochester, NY. New single 'Summer' out June 22. Stream everywhere, play the game, follow along." />
+<meta name="description" content="millo — alt-rock from Rochester, NY. New single 'Summer' OUT NOW. Stream everywhere, play the game, follow along." />
 <meta name="theme-color" content="#070409" />
 
-  <!-- Favicon & App Icons -->
-<link rel="icon" type="image/svg+xml" href="Millo - Logo Hat.svg" />
-<link rel="alternate icon" href="favicon.ico" />
-<link rel="apple-touch-icon" href="Millo - Logo Hat.svg" />
-<link rel="mask-icon" href="Millo - Logo Hat.svg" color="#000000" />
-<meta property="og:title" content="MILLO // OFFICIAL" />
-<meta property="og:description" content="New single 'Summer' — out June 22. Stream, play the game, follow along." />
-<meta property="og:type" content="website" />
-<meta property="og:image" content="og-image.jpg" />
+<meta property="og:title" content="MILLO // SUMMER — OUT NOW" />
+<meta property="og:description" content="New single 'Summer' is out now. Stream everywhere, play the game, follow along." />
+<meta property="og:type" content="music.song" />
+<meta property="og:image" content="summer-art.png" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="MILLO // OFFICIAL" />
-<meta name="twitter:description" content="New single 'Summer' — out June 22." />
+<meta name="twitter:title" content="MILLO // SUMMER — OUT NOW" />
+<meta name="twitter:description" content="New single 'Summer' is out now — stream everywhere." />
+<meta name="twitter:image" content="summer-art.png" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -154,9 +150,19 @@
 
   /* ══ HERO: SUMMER ═══════════════════════════════════════ */
   .hero{ margin:22px 0 4px; border:1px solid var(--pink); padding:18px 16px 20px; position:relative; }
-  .hero::before{ content:'NEW SINGLE'; position:absolute; top:-8px; left:14px; background:var(--bg); padding:0 8px; font-family:var(--pixel); font-size:7px; letter-spacing:0.16em; color:var(--pink-hi); }
+  .hero::before{ content:'NEW SINGLE · OUT NOW'; position:absolute; top:-8px; left:14px; background:var(--bg); padding:0 8px; font-family:var(--pixel); font-size:7px; letter-spacing:0.16em; color:var(--pink-hi); }
   .hero-top{ display:flex; gap:14px; align-items:center; }
-  #sun{ width:84px; height:84px; flex-shrink:0; image-rendering:pixelated; border:1px solid var(--pink-faint); }
+
+  /* single cover art */
+  .cover{ display:block; position:relative; width:100%; margin:4px 0 16px; border:1px solid var(--pink); overflow:hidden; line-height:0; }
+  .cover img{ width:100%; height:auto; display:block; filter:saturate(1.05) contrast(1.03); transition:filter .2s,transform .3s; }
+  .cover::after{ content:''; position:absolute; inset:0; pointer-events:none;
+    background:repeating-linear-gradient(0deg, rgba(0,0,0,0) 0 2px, rgba(0,0,0,0.16) 2px 3px),
+      radial-gradient(ellipse 100% 90% at 50% 45%, transparent 60%, rgba(255,145,175,0.12) 100%);
+    mix-blend-mode:multiply; }
+  .cover .cover-tag{ position:absolute; top:8px; right:8px; z-index:2; font-family:var(--pixel); font-size:8px; letter-spacing:0.14em;
+    color:var(--bg); background:var(--pink); padding:5px 7px; text-shadow:none; animation:blink 1.6s step-end infinite; }
+  .cover:hover img{ filter:saturate(1.2) contrast(1.08); transform:scale(1.015); }
   .hero-meta{ min-width:0; }
   .hero-eyebrow{ font-size:10px; opacity:0.6; letter-spacing:0.12em; }
   .hero-title{
@@ -187,6 +193,7 @@
   }
   .hero-btn:hover{ background:var(--pink); color:var(--bg); text-shadow:none; }
   .hero-btn:active{ transform:translateY(1px); }
+  .hero-btn-2{ margin-top:8px; border-color:var(--pink-faint); font-weight:500; opacity:0.92; }
   .hero-note{ margin-top:10px; font-size:10px; opacity:0.45; letter-spacing:0.04em; }
 
   /* ══ GAME ═══════════════════════════════════════════════ */
@@ -237,36 +244,44 @@
     <div class="logo">MILLO<span class="cur"></span></div>
     <div class="bio">backrooms synthgaze</div>
     <div class="stars" aria-label="5 out of 5 stars"><i>✰</i><i>✰</i><i>✰</i><i>✰</i><i>✰</i></div>
-    <div class="ticker"><span class="ticker-inner">★ NEW SINGLE "SUMMER" — 06.22.2026 ★ HIT THE WALL OUT NOW ★ STREAM ON SPOTIFY &amp; APPLE MUSIC ★ PLAY THE VIDEOGAME ★ FOLLOW @MILLO.BAND ★ </span></div>
+    <div class="ticker"><span class="ticker-inner">★ "SUMMER" OUT NOW — 06.22.2026 ★ STREAM EVERYWHERE ★ SPOTIFY · APPLE MUSIC · YOUTUBE ★ PLAY THE VIDEOGAME ★ FOLLOW @MILLO.BAND ★ </span></div>
   </header>
 
   <!-- HERO -->
   <section class="hero">
+    <a class="cover" href="https://milloband.com/summer/" target="_blank" rel="noopener" aria-label="Summer single artwork — listen now">
+      <img src="summer-art.png" alt="millo — Summer (single cover)" loading="eager" />
+      <span class="cover-tag">OUT NOW</span>
+    </a>
     <div class="hero-top">
-      <canvas id="sun" width="42" height="42" aria-hidden="true"></canvas>
       <div class="hero-meta">
-        <div class="hero-eyebrow">New single · out June 22</div>
+        <div class="hero-eyebrow">New single · out now · 06.22.2026</div>
         <div class="hero-title glitch" data-text="SUMMER">SUMMER</div>
       </div>
     </div>
     <div class="eq" aria-hidden="true"></div>
-    <div class="countdown"><span class="lab">OUT IN </span><span id="cd">-- : -- : -- : --</span></div>
-    <a class="hero-btn" href="https://open.spotify.com/artist/5DqBbDMaCLIJEswvNl07Ys" target="_blank" rel="noopener" id="summer-link">
+    <div class="countdown"><span class="lab">STATUS </span><span id="cd">-- : -- : -- : --</span></div>
+    <a class="hero-btn" href="https://open.spotify.com/track/2XWSDi1w7lQaEZawG4TVDM" target="_blank" rel="noopener" id="summer-link">
       <span>▸ Listen on Spotify</span><span>↗</span>
     </a>
-    <div class="hero-note" id="hero-note">Out June 22 · follow on Spotify</div>
+    <a class="hero-btn hero-btn-2" href="https://milloband.com/summer/" target="_blank" rel="noopener">
+      <span>▸ All links / stream everywhere</span><span>↗</span>
+    </a>
+    <div class="hero-note" id="hero-note">Out now · stream everywhere</div>
   </section>
 
   <!-- MUSIC -->
-  <div class="shead">Listen</div>
-  <a class="cmd" href="https://open.spotify.com/artist/5DqBbDMaCLIJEswvNl07Ys" target="_blank" rel="noopener"><span class="arrow">▸</span><span class="name">Spotify</span><span class="lead"></span><span class="act">listen ↗</span></a>
-  <a class="cmd" href="https://music.apple.com/us/artist/millo/1620074008" target="_blank" rel="noopener"><span class="arrow">▸</span><span class="name">Apple Music</span><span class="lead"></span><span class="act">listen ↗</span></a>
-  <a class="cmd" href="https://millo.bandcamp.com/track/infrared" target="_blank" rel="noopener"><span class="arrow">▸</span><span class="name">Bandcamp</span><span class="lead"></span><span class="act">listen ↗</span></a>
+  <div class="shead">Listen — "Summer" out now</div>
+  <a class="cmd" href="https://open.spotify.com/track/2XWSDi1w7lQaEZawG4TVDM" target="_blank" rel="noopener"><span class="arrow">▸</span><span class="name">Summer<span class="sub">Spotify</span></span><span class="lead"></span><span class="act">listen ↗</span></a>
+  <a class="cmd" href="https://music.apple.com/us/album/summer-single/6780217036" target="_blank" rel="noopener"><span class="arrow">▸</span><span class="name">Summer<span class="sub">Apple Music</span></span><span class="lead"></span><span class="act">listen ↗</span></a>
+  <a class="cmd" href="https://youtu.be/BfJhYtu4J_0" target="_blank" rel="noopener"><span class="arrow">▸</span><span class="name">Summer<span class="sub">YouTube</span></span><span class="lead"></span><span class="act">watch ↗</span></a>
+  <a class="cmd" href="https://milloband.com/summer/" target="_blank" rel="noopener"><span class="arrow">▸</span><span class="name">Summer<span class="sub">all platforms</span></span><span class="lead"></span><span class="act">open ↗</span></a>
+  <a class="cmd" href="https://open.spotify.com/artist/5DqBbDMaCLIJEswvNl07Ys" target="_blank" rel="noopener"><span class="arrow">▸</span><span class="name">More from millo<span class="sub">Spotify</span></span><span class="lead"></span><span class="act">listen ↗</span></a>
 
   <!-- WATCH & PLAY -->
   <div class="shead">Watch &amp; Play</div>
   <a class="cmd" href="https://millo-band.github.io/millos-hit-the-wall/" target="_blank" rel="noopener"><span class="arrow">▸</span><span class="name">Play the Videogame</span><span class="lead"></span><span class="act">play ↗</span></a>
-  <a class="cmd" href="https://www.youtube.com/watch?v=6AX97O1ykZs" target="_blank" rel="noopener"><span class="arrow">▸</span><span class="name">Watch: Making Of 'Hit the Wall'</span><span class="lead"></span><span class="act">watch ↗</span></a>
+  <a class="cmd" href="https://www.youtube.com/watch?v=6AX97O1ykZs" target="_blank" rel="noopener"><span class="arrow">▸</span><span class="name">Watch: Making Of</span><span class="lead"></span><span class="act">watch ↗</span></a>
 
   <!-- PLAYLISTS -->
   <div class="shead">Playlists</div>
